@@ -2,7 +2,7 @@ just testing the page - do not worry
 # HTB-Fluffy
 *Walkthrough*
 
-<img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/user-attachments/assets/d1bca2e3-2d89-4efb-8016-745fd33facce" />
+<img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/fluffy.jpg" />
 
 ---
 ## Intro
