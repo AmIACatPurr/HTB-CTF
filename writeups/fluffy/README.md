@@ -6,10 +6,11 @@ just testing the page - do not worry
 
 ---
 ## Intro
-Today, the HTB challenge “Fluffy”, part of Season 8, has officially been retired. That’s why, having successfully completed it, I decided to share the steps I followed to reach the final solution, capturing both required flags.
+Don’t let the name fool you. Fluffy isn’t a walk in the park; it’s a masterclass in Active Directory exploitation. 
+What starts as a simple misconfiguration in SMB guest access quickly spirals into a hunt for credentials. 
+From exploiting a fresh PDF-based CVE to abusing the dark corners of Certificate Services (AD CS), this machine reminds us that even the 'softest' targets have teeth. 
 
-I want to say right away that this has been one of the most interesting machines I worked on this year. At the time, I was preparing for the PJPT exam by TCM Security (*which I successfully passed at the end of last month*), and I needed some practice with Active Directory. This machine also had something extra to offer!
-For an entry-level player like me, it wasn’t exactly easy: at first, I even thought about giving up... but then I told myself: never give up! **And here I am.**
+Let’s dive into the belly of the beast.
 
 ---
 ## nmap
