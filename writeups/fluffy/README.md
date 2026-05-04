@@ -1,5 +1,5 @@
 # HTB-Fluffy
-*let's go*
+*Starting creds: j.fleischman / J0elTHEM4n1990!*
 
 <img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/fluffy.jpg" />
 
