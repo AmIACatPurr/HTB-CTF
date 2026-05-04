@@ -897,11 +897,12 @@ we don't need to crack a password—we simply inject our own public key into the
 
 ## Shadow Credentials and First shell
 
-The strike begins...
+The strike begins...after the install
 
 ```bash
 
 pipx install certipy-ad
+
 (venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
 └──╼ [★]$ certipy shadow auto -username p.agila@fluffy.htb -password 'prometheusx-303' -account ca_svc
 
@@ -950,8 +951,8 @@ User flag done
 
 All the steps here - https://github.com/ly4k/Certipy/wiki/06-%E2%80%90-Privilege-Escalation#esc16-security-extension-disabled-on-ca-globally
 
-This command is your "thermal sensor" for the grid. 
-By running Certipy with the find module, you are mapping the AD CS (Active Directory Certificate Services) infrastructure to identify specific, 
+This command is the "thermal sensor" for the grid. 
+By running Certipy with the find module, we are mapping the AD CS (Active Directory Certificate Services) infrastructure to identify specific, 
 exploitable misconfigurations in certificate templates.
 
 ```bash
@@ -1001,11 +1002,12 @@ Certificate Templates                   : [!] Could not find any certificate tem
 
 Got it! We found the ESC16 vulnerability (a flaw in certain AD certificate configurations that allows attackers to escalate privileges by abusing certificate-based authentication).
 
-When you encounter certificate vulnerabilities, I highly recommend following step-by-step the excellent instructions provided in the official Certipy Github page (...this led me directly to the root flag):
+When we encounter certificate vulnerabilities, I highly recommend following step-by-step the excellent instructions provided in the official Certipy Github page (...this led me directly to the root flag):
 
 https://github.com/ly4k/Certipy/wiki/06-%E2%80%90-Privilege-Escalation
 
-Below, I outline the steps I followed. If you want a detailed explanation, feel free to check the link above.
+To dismantle the final layers of the fortress, we follow a precise sequence. 
+In the grid, execution is everything—one wrong bit, and the ghost is purged.
 
 1. Read the UPN of the victim (in our case, ca_svc):
 
@@ -1069,7 +1071,9 @@ Certipy v4.8.2 - by Oliver Lyak (ly4k)
 ```
 
 
-5. Authenticate as the administrator (due to clock skew preventing the command from working correctly, we add faketime):
+5. This is the final act of the play—the moment the forgery becomes reality.
+ We  are executing the PKINIT (Public Key Cryptography for Initial Authentication) protocol.
+Now that we have the administrator.pfx file (the forged soul), we  are presenting it to the KDC (Key Distribution Center) to demand a legitimate session.
 
 ```bash
 (venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
@@ -1092,9 +1096,9 @@ Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 ## Root
 
-There’s little to comment on. The final step is that breath of fresh air that fills you with oxygen, and after so much effort, makes you say: I did it! It’s over!
-
-So, let’s conclude this amazing machine:
+There’s no more code to write, no more logic to bend.
+The fortress has been dismantled. The architect’s secrets are now yours.
+We connect via winrm as Administrator to get the root flag
 
 ```bash
 (venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
@@ -1123,15 +1127,12 @@ dbfeccc5a621a08d50b662808d020d27
 ---
 
 ## Conclusion
+At the heart of the Fluffy machine lies the Temple of Certificates (AD CS).
 
-Personally, I faced a real challenge. As I mentioned in the introduction, during Season 8, partly due to lack of time and partly because of other commitments, I hadn’t been able to finish it: I reached the first flag and then got stuck. For me, this machine was fundamental — I was preparing for the PJPT, which focuses on internal penetration testing, and I needed it as practice. After hours and hours of attempts, however… I gave up.
+In the old world, identity was blood and bone. In the Fluffy construct, identity is nothing but a series of cryptographic assertions. 
+By manipulating the ESC16 vulnerability, we proved that identity is not an inherent truth, but a consensus of data. 
+When we swapped the UPN, we didn't just lie to the system—we redefined reality.
 
-Nevertheless, before Fluffy’s retirement, and after the excitement of successfully passing the PJPT, I picked it up again and brought it to completion.
+"The machine asked: 'What makes you, you?' and we answered: 'Whatever we code ourselves to be.'
 
-It was a fantastic experience: I had the chance to review “classic” concepts and learn new things. It felt like a complete machine for Active Directory, and the certificate-related part undeniably opens up a whole new world.
 
-HTB says it’s easy, but… either I’m really bad, or HTB’s “easy” is at least equivalent to medium on any other platform.
-
-That said, I’ll sign off here!
-
-Happy Hacking!
