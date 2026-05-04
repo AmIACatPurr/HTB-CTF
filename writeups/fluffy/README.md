@@ -1125,18 +1125,8 @@ fluffy\administrator
 ```
 
 ```bash
-*Evil-WinRM* PS C:\Users\Administrator\Desktop> ls
 
-
-    Directory: C:\Users\Administrator\Desktop
-
-
-Mode                LastWriteTime         Length Name
-----                -------------         ------ ----
--ar---         9/2/2025   4:01 PM             34 root.txt
-
-
-*Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> cat root.txt
 dbfeccc5a621a08d50b662808d020d27
 
 ```
