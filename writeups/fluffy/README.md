@@ -1,6 +1,5 @@
-just testing the page - do not worry
 # HTB-Fluffy
-*Walkthrough*
+*let's go*
 
 <img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/fluffy.jpg" />
 
@@ -8,13 +7,15 @@ just testing the page - do not worry
 ## Intro
 Don’t let the name fool you. Fluffy isn’t a walk in the park; it’s a masterclass in Active Directory exploitation. 
 What starts as a simple misconfiguration in SMB guest access quickly spirals into a hunt for credentials. 
-From exploiting a fresh PDF-based CVE to abusing the dark corners of Certificate Services (AD CS), this machine reminds us that even the 'softest' targets have teeth. 
+From exploiting a fresh PDF-based CVE to abusing the dark corners of Certificate Services (AD CS), 
+this machine reminds us that even the 'softest' targets have teeth. 
 
 Let’s dive into the belly of the beast.
 
 ---
 ## nmap
-Let's start with a full nmap scan. Generally, especially for more complex machines that require more time, I open additional tabs in my terminal simultaneously to begin enumeration. A great tool that allows for an initial comprehensive enumeration is enum4linux-ng. Below are some of the results:
+To breach the sprawl, we first map the fortress. I initiate a full Nmap sweep to identify open sockets and vulnerabilities. 
+In this digital underworld, speed is life, so I leverage multiple terminal tabs to multitask—running enum4linux-ng in parallel to harvest domain intelligence.
 
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
@@ -317,7 +318,9 @@ Nmap done: 1 IP address (1 host up) scanned in 86.57 seconds
 
 ```
 
-The scan confirms we're dealing with an AD environment and also reveals the domain name — `fluffy.htb` — which we had already suspected, and the DC name -  `dc01-fluffy.htb`.
+The scan confirms we're dealing with an AD environment and also reveals the domain name — `fluffy.htb` — which we had already suspected, 
+and the DC name -  `dc01-fluffy.htb`.
+
 We’ll go ahead and add it to our `/etc/hosts` file right away:
 
 ```bash
@@ -325,11 +328,9 @@ sudo nano /etc/hosts
 ```
 Let's add:
 ```bash
-10.10.11.69  fluffy.htb  dc01-fluffy.htb
+10.129.232.88  fluffy.htb  dc01-fluffy.htb
 ```
 
-
-As mentioned earlier, while Nmap was running, I started exploring other enumeration paths in parallel:
 
 ## Enum4linux-ng
 
@@ -719,17 +720,11 @@ Completed after 7.87 seconds
 ```
 Using `enum4linux-ng`, we gather a LOT of information!
 
-All of this gives us a solid starting point for further enumeration!
-
 ---
 
 ## SMB: A Promising Entry Point
 
 A key service — and almost certainly our initial access point — is **SMB**.  
-We’ve already extracted a long list of users and shares. Generally, shared folders on the network are among the first “doors” to open: it’s worth exploring them right away, as we might find interesting files, documents, or directories.
-
-That’s my usual approach for CTFs: in a real-world penetration test, of course, it’s crucial to go step by step and identify **all** potential vulnerabilities.
-
 Let's use **nxc**:
 
 ```bash
@@ -749,14 +744,13 @@ SMB         10.129.232.88   445    DC01             SYSVOL          READ        
 
 ```
 
-One thing that immediately stands out is an exceptionally juicy and non-“classic” share: “IT”, for which we even have write permissions in addition to read access!
+One thing that immediately stands out is a non-“classic” share: “IT”, for which we even have write permissions in addition to read access
 
-Let's dive into it!
+Let's see what's in there
 
 ---
 
 ## IT
-We proceed by accessing the IT folder, continuing with a manual exploration in search of what interests us: we absolutely need to find an entry point, a flaw, or a vulnerability…
 
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~]
@@ -774,23 +768,29 @@ smb: \> ls
 
 ```
 
-Our attention falls on several items. There’s a folder called “everything” (to explore), its zipped version, a KeePass database (which we often find on these machines; very often the password databases are protected with weak passwords, or we can find the password written in plain text in some file!), and a PDF file.
-
-For simplicity and speed, I start with the PDF document:
+There are many items, let's start with the PDF:
 
 <img width="401" height="565" alt="image" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/pdf_in_fluffy.png" />
 
-Well, I was mistaken… we didn’t just find a simple flaw. We found an actual report containing known vulnerabilities, including some critical-level ones!
+It is an actual report containing known vulnerabilities, including some critical-level...
 
-Without thinking twice, I dive into a Google search, and among the results, I find a fantastic PoC related to the second CVE on the list, 2025-24071:
-
-https://github.com/ThemeHackers/CVE-2025-24071
+Let's take some time to google them and read - https://github.com/ThemeHackers/CVE-2025-24071
 
 ---
 
 ## CVE-2025-24071
 
-I download the exploit, try to understand how it works, and then execute it:
+So this is interesting, the exploit targets the way Windows handles .library-ms files (Windows Library Description files). 
+These files are designed to aggregate content from various locations, but the machine's implicit trust in them is its downfall.
+
+The Mechanism: An attacker crafts a malicious .library-ms file containing a remote network path (UNC path) pointing to a server they control.
+
+The Trigger: When a user simply browses a folder containing this file (or an archive like a ZIP/RAR that holds it), 
+Windows File Explorer attempts to "preview" or parse the library.
+
+The Theft: This parsing triggers an automatic SMB authentication request. The victim’s machine reaches out to the attacker's server and 
+hands over the user's NTLM hash (their encrypted password fragment) in an attempt to authenticate.
+
 
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
@@ -841,9 +841,13 @@ there you are little one - prometheusx-303
 ---
 
 ## Bloodhound
-An additional essential step in AD pentesting is without a doubt the use of BloodHound (a tool that maps Active Directory relationships and permissions to help identify attack paths in a domain).
+An essential step in any high-stakes AD infiltration is deploying BloodHound. 
+In this sprawl, permissions aren't just lines of code—they are a web of interconnected relationships. BloodHound acts as our digital sonar, using 
+graph theory to map the "hidden veins" of the domain and pinpoint the exact sequence of hops needed to reach Domain Admin.  
 
-I won’t describe the full installation process or how the tool works in this walkthrough. I’ll simply show the extremely valuable information we obtained, which, as you’ll see, will help us proceed correctly.
+I won’t bore you with the installation logs or the underlying mechanics. 
+In our world, the result is the only truth that matters. The data we harvested reveals a direct line from our current foothold to the core, 
+illuminating a path that would be invisible to the naked eye.
 
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop]
@@ -882,22 +886,18 @@ memberOf: CN=Service Account Managers,CN=Users,DC=fluffy,DC=htb
 
 ```
 
-We immediately notice the significance of this information.
+We’ve compromised p.agila. In the rigid hierarchy of the grid, he is a vital node. Membership in the "Service Accounts Managers" group grants him GenericAll rights over the "Service Accounts" container.
 
-Let's dive into it
+This isn't just access; it's total ownership. Because that container holds ca_svc, ldap_svc, and winrm_svc, our reach now extends to GenericWrite privileges over those entities. In a world of digital masks, we now hold the tools to reshape them.
 
-We’ve pwned the user p.agila, who, due to his relationships, turns out to be a key user: he are a member of the “Service Accounts Managers” group, which has GenericAll on “Service Accounts” (which in turn has GenericWrite on the service accounts ca_svc, ldap_svc, and winrm_svc).
-
-Having these properties (GenericAll and GenericWrite) grants a series of powerful privileges over the referenced objects — privileges that are invaluable.
-
-After researching online, one of the emerging techniques is “Shadow Credentials” (a method to abuse certificate or key permissions in AD to impersonate users or escalate privileges). This is exactly what we will do, using the tool already present in Kali: Certipy or Certipy-AD.
+With GenericWrite, we can execute a Shadow Credentials attack. By manipulating the msDS-KeyCredentialLink attribute, 
+we don't need to crack a password—we simply inject our own public key into the target's identity.
 
 ---
 
 ## Shadow Credentials and First shell
 
-We launch the attack.
-(You’ll notice the use of “faketime”, necessary to handle clock skew issues that unfortunately cause problems with this attack, just as they do, for example, with Kerberoasting. Faketime is the only solution I’ve consistently found to work 100%, so I’ll stick with it.)
+The strike begins...
 
 ```bash
 
@@ -920,9 +920,7 @@ pipx install certipy-ad
 
 ```
 
-The attack was successful, and we obtained the hash of winrm_svc!
-
-The next step is obvious… Since we’re dealing with WinRM, it’s time for Evil-WinRM to enter the scene to obtain the first shell — and with it, the user flag!
+The path is clear, we deploy Evil-WinRM, next step user flag
 
 ```bash
 (venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
@@ -950,19 +948,11 @@ User flag done
 
 ## PRIVESC - ESC16
 
-The privilege escalation step is often the most challenging. If it’s already tough when working locally, imagine how it is in a Domain environment! But this shouldn’t discourage us — on the contrary, it should give us a lot of motivation.
+All the steps here - https://github.com/ly4k/Certipy/wiki/06-%E2%80%90-Privilege-Escalation#esc16-security-extension-disabled-on-ca-globally
 
-In our specific case, we know we have “power” over a service account called ca_svc, and we also know that one of the ways to perform a privesc in an AD environment is through the exploitation of vulnerable certificates.
-
-The step I decided to take, therefore, was to target ca_svc and repeat the same attack we performed against winrm_svc. But in this case, as we’ll see, it’s not to obtain a shell as ca_svc — rather, it’s to leverage its capabilities.
-
-So, we will proceed as follows:
-
-- Add our p.agila account to the service accounts (with BloodyAD);
-- Perform Shadow Credentials with Certipy (as done previously);
-- Use the obtained ca_svc credentials to find and exploit vulnerable certificates;
-
-
+This command is your "thermal sensor" for the grid. 
+By running Certipy with the find module, you are mapping the AD CS (Active Directory Certificate Services) infrastructure to identify specific, 
+exploitable misconfigurations in certificate templates.
 
 ```bash
 (venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
@@ -1018,7 +1008,6 @@ https://github.com/ly4k/Certipy/wiki/06-%E2%80%90-Privilege-Escalation
 Below, I outline the steps I followed. If you want a detailed explanation, feel free to check the link above.
 
 1. Read the UPN of the victim (in our case, ca_svc):
-
 
 ```bash
 (venv) ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-pzeors8as1]─[~/Desktop/bloodyAD]
