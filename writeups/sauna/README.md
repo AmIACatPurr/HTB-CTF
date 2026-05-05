@@ -1,18 +1,15 @@
 # HTB-Sauna
 
-<img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/sauna.jpg" />
+<img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/sauna.jfif" />
 
 
 ---
 ## Intro
-xxx
-xxx
-xxx
-xxx
+In the grid, to be named is to be conquered. This is the chronicle of the steam.
 ---
 
 ## nmap & enumeration
-
+Let's start with some easy enumeration and usual check, dig, RPC, ldap etc...
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
 └──╼ [★]$ nmap -p- --min-rate 10000 10.129.39.213
@@ -81,7 +78,7 @@ Host script results:
 |   3:1:1: 
 |_    Message signing enabled and required
 ```
-
+Since it was found a IIS on 80 let's try with gobuster and nikto
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
 └──╼ [★]$ gobuster dir -u http://10.129.39.213/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 40
@@ -129,6 +126,7 @@ Progress: 220560 / 220561 (100.00%)
 + End Time:           2026-05-05 08:12:39 (GMT-5) (77 seconds)
 ```
 
+Now with the checks
 ```bash
 
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
@@ -139,6 +137,7 @@ Progress: 220560 / 220561 (100.00%)
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
 └──╼ [★]$ smbclient -N -L //10.129.39.213
 Anonymous login successful
+
 
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
 └──╼ [★]$ rpcclient 10.129.39.213 -N
@@ -333,7 +332,9 @@ result: 0 Success
 # numResponses: 19
 # numEntries: 15
 # numReferences: 3
-
+```
+Any zone transfer? nope
+```bash
 ┌─[root@htb-oh3wnolosf]─[/home/justdave]
 └──╼ #dig axfr @10.129.39.213 egotistical-bank.local
 
@@ -341,10 +342,9 @@ result: 0 Success
 ; (1 server found)
 ;; global options: +cmd
 ; Transfer failed.
-
-
 ```
 
+Kerbrute to run
 ```bash
 Installing kerbrute
 ┌─[✗]─[root@htb-oh3wnolosf]─[/home/justdave]
