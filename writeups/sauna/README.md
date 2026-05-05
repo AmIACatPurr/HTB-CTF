@@ -1,5 +1,8 @@
 # HTB-Sauna
 
+<img width="862" height="793" alt="Screenshot 2025-09-20 214022" src="https://github.com/AmIACatPurr/HTB-CTF/blob/main/writeups/assets/sauna.jpg" />
+
+
 ---
 ## Intro
 xxx
