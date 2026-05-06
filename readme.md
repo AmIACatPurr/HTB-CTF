@@ -1,6 +1,7 @@
-HTB-CTF Writeups
+HTB-CTF Writeups [ System_Update: Active_Breach_Detected ]
 
-Initializing submission protocol. This repository houses the systemic breakdowns of Hack The Box assets. 
+Initializing submission protocol. 
+This repository houses the systemic breakdowns of Hack The Box assets. 
 Full tracking of payload delivery, security bypasses, and root-level escalation. 
 
 Information wants to be free.
