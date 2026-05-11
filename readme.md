@@ -13,4 +13,4 @@ Information wants to be free.
 | Status | Node_ID | Threat_Level | Data_Log | Timestamp |
 | :---: | :--- | :---: | :---: | :---: |
 | 🟢 | **Fluffy** | Easy | [Link](./writeups/fluffy) | 04/05/2026 |
-| 🟡 | **Sauna** | Easy | [Link](./writeups/sauna) | IN_PROGRESS |
+| 🟢 | **Sauna** | Easy | [Link](./writeups/sauna) | 11/05/2026 |
