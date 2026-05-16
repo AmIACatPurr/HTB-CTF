@@ -10,8 +10,8 @@ Information wants to be free.
 
 ## 🖥️ Hack The Box Machines
 
-| Status | Node_ID | Threat_Level | Data_Log | Timestamp |
+| Status | Node_ID | Threat_Level | Data_Log | Publish |
 | :---: | :--- | :---: | :---: | :---: |
 | 🟢 | **Fluffy** | Easy | [Link](./writeups/fluffy) | 04/05/2026 |
 | 🟢 | **Sauna** | Easy | [Link](./writeups/sauna) | 11/05/2026 |
-| 🟢 | **Forest** | Easy | [Link](./writeups/forest).  | xx/05/2026 |
+| 🟢 | **Forest** | Easy | [Link](./writeups/forest)  | 18/05/2026 |
