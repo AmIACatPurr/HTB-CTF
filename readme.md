@@ -14,4 +14,4 @@ Information wants to be free.
 | :---: | :--- | :---: | :---: | :---: |
 | 🟢 | **Fluffy** | Easy | [Link](./writeups/fluffy) | 04/05/2026 |
 | 🟢 | **Sauna** | Easy | [Link](./writeups/sauna) | 11/05/2026 |
-| 🟢 | **Forest** | Easy | [Link] (./writeups/forest).  | xx/05/2026 |
+| 🟢 | **Forest** | Easy | [Link](./writeups/forest).  | xx/05/2026 |
