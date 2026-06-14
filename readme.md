@@ -15,4 +15,4 @@ Information wants to be free.
 | 🟢 | **Fluffy** | Easy | [Link](./writeups/fluffy) | 04/05/2026 |
 | 🟢 | **Sauna** | Easy | [Link](./writeups/sauna) | 11/05/2026 |
 | 🟢 | **Forest** | Easy | [Link](./writeups/forest)  | 18/05/2026 |
-| 🟡 | **Jeeves** | Medium | [Link](./writeups/jeeves) | In corso |
+| 🟢 | **Jeeves** | Medium | [Link](./writeups/jeeves) | 14/06/2026 |
