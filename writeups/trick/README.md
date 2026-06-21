@@ -7,13 +7,15 @@
 ---
 ## Intro
 
-"Jeeves is a bleak reminder that we build automation to escape human error, only to let a single unauthenticated pipeline hand over the keys to the entire kingdom."
+Welcome to Trick. This machine isn’t a sci-fi anomaly; it’s a monument to corporate complacency and the illusion of perimeter defense. 
+It perfectly illustrates the fundamental law of the digital underground: you don’t always need a flashy zero-day exploit to burn a system down; 
+you just need to read the manual better than the person who built it..
 
 Target IP 10.129.228.112
 My IP 10.10.14.138
 
 ## nmap & enumeration
-We started by mapping the target's digital footprint. The initial scan revealed standard windows infrastructure, but the real entry point was buried on a non-standard port.
+We started by mapping the target's digital footprint.
 
 
 ```bash
