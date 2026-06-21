@@ -16,3 +16,4 @@ Information wants to be free.
 | 🟢 | **Sauna** | Easy | [Link](./writeups/sauna) | 11/05/2026 |
 | 🟢 | **Forest** | Easy | [Link](./writeups/forest)  | 18/05/2026 |
 | 🟢 | **Jeeves** | Medium | [Link](./writeups/jeeves) | 14/06/2026 |
+| 🟡 | **Trick** | Easy | [Link](./writeups/trick) | WIP |
